@@ -1,0 +1,32 @@
+{
+    "modul_1": [
+        {
+            "suara": "belajar_1",
+            "gambar": ["isyarat_1"],
+            "judul": "angka 1",
+            "penjelasan": "angka 1 adalah angka"
+        },
+        {
+            "suara": "belajar_2",
+            "gambar": ["isyarat_2"],
+            "judul": "angka 2",
+            "penjelasan": "angka 2 adalah angka"
+        }
+    ],
+    "modul_2": [
+        {
+            "suara": "belajar_3",
+            "gambar": ["isyarat_a"],
+            "judul": "huruf a",
+            "penjelasan": "a adalah huruf"
+        }
+    ],
+    "modul_3": [
+        {
+            "suara": "belajar_4",
+            "gambar": ["isyarat_i", "isyarat_b", "isyarat_u"],
+            "judul": "'ibu' dalam bahasa isyarat",
+            "penjelasan": "ibu adalah orang tua perempuan"
+        }
+    ]
+}

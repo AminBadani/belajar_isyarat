@@ -1,0 +1,11 @@
+{
+    "nama": "Rio",
+    "sekolah": "Universitas",
+    "jabatan": "guru",
+    "progress_belajar": [0, 0, 0],
+    "progress_kuis": 0,
+    "nilai_tes_modul": [0, 0],
+    "pengaturan": [
+        "nilai"
+    ]
+}

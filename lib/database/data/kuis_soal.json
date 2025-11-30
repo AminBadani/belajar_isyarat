@@ -1,0 +1,59 @@
+[
+    {
+        "id": 1,
+        "suara": "tes_1",
+        "gambar": [],
+        "pertanyaan": "susun angka 1,2,3",
+        "opsi": ["angka_2", "angka_1", "angka_3"],
+        "jawaban": ["angka_1", "angka_2", "angka_3"],
+        "mode": "susun"
+    },
+    {
+        "id": 2,
+        "suara": "tes_1",
+        "gambar": [],
+        "pertanyaan": "susun angka 1,2,3",
+        "opsi": ["angka_2", "angka_1", "angka_3"],
+        "jawaban": ["angka_1", "angka_2", "angka_3"],
+        "mode": "susun"
+    },
+    {
+        "id": 3,
+        "suara": "tes_2",
+        "gambar": ["isyarat_b"],
+        "pertanyaan": "tangan diatas melambangkan huruf?",
+        "opsi": ["huruf_a", "huruf_b", "huruf_c"],
+        "jawaban": ["huruf_b"],
+        "mode": "pilih"
+    },
+    {
+        "id": 4,
+        "suara": "tes_3",
+        "gambar": ["isyarat_b", "isyarat_c", "isyarat_a"],
+        "pertanyaan": "hubungkan isyarat ke huruf yang benar!",
+        "opsi": ["huruf_a", "huruf_b", "huruf_c"],
+        "jawaban": [
+            ["huruf_a", "huruf_b", "huruf_c"], 
+            ["isyarat_a", "isyarat_b", "isyarat_c"]
+        ],
+        "mode": "hubungkan"
+    },
+    {
+        "id": 5,
+        "suara": "tes_4",
+        "gambar": ["isyarat_i", null, "isyarat_u"],
+        "pertanyaan": "isi huruf yang kosong agar menjadi kata 'ibu'!",
+        "opsi": ["isyarat_a", "isyarat_b", "isyarat_c"],
+        "jawaban": ["isyarat_b"],
+        "mode": "lengkapi"
+    },
+    {
+        "id": 6,
+        "suara": "tes_5",
+        "gambar": ["isyarat_n", "isyarat_u", "isyarat_l", "isyarat_l"],
+        "pertanyaan": "apa arti kata tersebut?",
+        "opsi": [],
+        "jawaban": ["null"],
+        "mode": "artikan"
+    }
+]
