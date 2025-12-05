@@ -14,8 +14,8 @@ class Pelajaran {
 }
 
 final List<Pelajaran> items = [
-  Pelajaran("Angka", "lib/database/gambar/numbers.png"),
-  Pelajaran("Huruf", "lib/database/gambar/abc-block.png"),
+  Pelajaran("Angka", "numbers"),
+  Pelajaran("Huruf", "abc-block"),
 ];
 
 class MenuUtamaBody extends StatefulWidget {
@@ -91,7 +91,7 @@ class _MenuUtamaBodyState extends State<MenuUtamaBody> {
                           gambar: [items[index].iconPath],
                           besarGambar: null,
                           warnaGambarColor: alat.kotakPutih,
-                          tepiRadiusGambar: 10,
+                          tepiRadiusGambar: 20,
                           kotakWarna: alat.kotak1,
                           pakaiKlik: true,
                           pakaiHover: true,
@@ -270,9 +270,9 @@ class _MenuUtamaBodyState extends State<MenuUtamaBody> {
                               ),
                               Expanded(
                                 child: alat.bangunProgressBar(
-                                  context, 
-                                  kProgressProgressMateri,
-                                  20
+                                  context: context, 
+                                  progress: kProgressProgressMateri,
+                                  tinggi: 20
                                 )
                               )
                             ],

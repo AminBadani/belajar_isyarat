@@ -1,4 +1,5 @@
 import 'package:belajar_isyarat/alat/alat_app.dart';
+import 'package:belajar_isyarat/kontrol/kontrol_belajar.dart';
 import 'package:belajar_isyarat/tampilan/card_statis.dart';
 import 'package:flutter/material.dart';
 import '../kontrol/kontrol_progress.dart';
@@ -28,6 +29,10 @@ class _MenuProgressBodyState extends State<MenuProgressBody> {
 
   @override
   Widget build(BuildContext context) {
+    final kBelajar = context.read<KontrolBelajar>();
+    final kProgress = context.read<KontrolProgress>();
+    final alat = context.read<AlatApp>();
+
     final kProgressSkorKuis = context.select<KontrolProgress, int>(
       (k) => k.progressKuis
     );
@@ -40,8 +45,23 @@ class _MenuProgressBodyState extends State<MenuProgressBody> {
     final kProgressProgressMateri = context.select<KontrolProgress, double>(
       (k) => k.ambilProgressStatusSemuaMateri()
     );
-    final kProgress = context.read<KontrolProgress>();
-    final alat = context.read<AlatApp>();
+    List<int> totalMateri = [];
+    final kProgressProgressBelajar = context.select<KontrolProgress, List<int>>(
+      (k) {
+        totalMateri.clear;
+        List<int> progress = [];
+        int materiSelesai = 0;
+        for (var i = 0; i < kBelajar.totalModul; i++) {
+          materiSelesai = 0;
+          for (var nilai in k.ambilStatusBelajar(i)) {
+            if (nilai) {materiSelesai++;}
+          }
+          progress.add(materiSelesai);
+          totalMateri.add(kBelajar.totalMateri(i+1));
+        }
+        return progress;
+      }
+    );
 
     int jumlahLulusTes = 0;
     for (var nilai in kProgressNilaiTes) {
@@ -141,7 +161,78 @@ class _MenuProgressBodyState extends State<MenuProgressBody> {
                     ]
                   )
                 );
-              })
+              }),
+              /*Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: alat.progress
+                ),
+                child: Container(
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                    color: alat.kotakPutih,
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        controller: controller,
+                        itemExtent: 2,
+                        itemCount: totalMateri.length,
+                        itemBuilder: (context, i) {
+                          return Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              gradient: alat.progress
+                            ),
+                            child: Container(
+                              width: double.maxFinite,
+                              decoration: BoxDecoration(
+                                color: alat.kotakPutih,
+                                borderRadius: BorderRadius.circular(10)
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Progress Pelajaran ${i + 1}",
+                                    style: TextStyle(
+                                      color: alat.teksKuning,
+                                      fontFamily: alat.judul,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "${kProgressProgressBelajar[i]} / ${totalMateri[i]}",
+                                        style: TextStyle(
+                                          color: alat.teksKuning,
+                                          fontFamily: alat.judul,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      alat.bangunProgressBar(
+                                        context: context, 
+                                        progress: kProgressProgressBelajar[i] / totalMateri[i], 
+                                        tinggi: 20
+                                      )
+                                    ]
+                                  )
+                                ],
+                              ),
+                            )
+                          );
+                        }
+                      )
+                    ],
+                  )
+                )
+              )*/
             ]
           ),
         ),

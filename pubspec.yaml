@@ -64,7 +64,7 @@ flutter:
       path: lib/database/font/Fredoka/
       fonts:
         - asset: lib/database/font/Fredoka/Fredoka-VariableFont_wdth,wght.ttf
-
+ 
     - family: Mulish
       path: lib/database/font/Mulish/
       fonts:

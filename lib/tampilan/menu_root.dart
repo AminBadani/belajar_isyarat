@@ -2,6 +2,7 @@ import 'package:belajar_isyarat/tampilan/card_statis.dart';
 import 'package:belajar_isyarat/tampilan/header_footer.dart';
 import 'package:belajar_isyarat/alat/alat_app.dart';
 import 'package:belajar_isyarat/tampilan/menu_tentang_body.dart';
+import 'package:belajar_isyarat/tampilan/percobaan.dart';
 import 'package:belajar_isyarat/tampilan/soal_model.dart';
 
 import 'package:flutter/material.dart';
@@ -56,19 +57,23 @@ class _MenuRootState extends State<MenuRoot> {
       backgroundColor: alatApp.latarBelakang,
       appBar: const Header(),
 
-      body: IndexedStack(
-        index: kontrolMenu.halaman,
-        children: [
-          const MenuUtamaBody(),        // 0 (static)
-          _belajarMenu ?? SizedBox.shrink(),  // 1 (lazy)
-          _belajarMateri ?? SizedBox.shrink(), // 2 (lazy)
-          _tesMenu  ?? SizedBox.shrink(),      // 3 (lazy)
-          _tesSoal ?? SizedBox.shrink(), // 4 (lazy)
-          const MenuKuisMenuBody(),     // 5 (static)
-          _kuisSoal ?? SizedBox.shrink(), // 6 (lazy)
-          const MenuProgressBody(),     // 7 (static)
-          const MenuTentangBody(),      // 8 (static)
-        ],
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: IndexedStack(
+          index: kontrolMenu.halaman,
+          children: [
+            const MenuUtamaBody(),        // 0 (static)
+            _belajarMenu ?? SizedBox.shrink(),  // 1 (lazy)
+            _belajarMateri ?? SizedBox.shrink(), // 2 (lazy)
+            _tesMenu  ?? SizedBox.shrink(),      // 3 (lazy)
+            _tesSoal ?? SizedBox.shrink(), // 4 (lazy)
+            const MenuKuisMenuBody(),     // 5 (static)
+            _kuisSoal ?? SizedBox.shrink(), // 6 (lazy)
+            const MenuProgressBody(),     // 7 (static)
+            const MenuTentangBody(),      // 8 (static)
+            const Percobaan()
+          ],
+        ),
       ),
 
       bottomNavigationBar: Builder(

@@ -16,8 +16,7 @@ class Susun extends StatefulWidget {
   final Widget pemisah; // Icon or Image
   final double besarPemisah; // ukuran pemisah
   final double jarakPemisah; // jarak kiri/kanan antara pemisah dan anak
-  final double tinggiPlaceholder;
-  final double lebarPlaceholder;
+  final Widget placeholder;
   final List<List<Widget>> anak; // anak[0], anak[1] (if duaSusun true)
   final int animasiDrag; // 0 = none, 1 = goyang
   final List<List<String>> namaIndeks; // nama per indeks per row
@@ -30,8 +29,7 @@ class Susun extends StatefulWidget {
     required this.pemisah,
     required this.besarPemisah,
     required this.jarakPemisah,
-    required this.tinggiPlaceholder,
-    required this.lebarPlaceholder,
+    required this.placeholder,
     required this.anak,
     required this.animasiDrag,
     required this.namaIndeks,
@@ -48,8 +46,6 @@ class _SusunState extends State<Susun> with TickerProviderStateMixin {
 
   late List<String> _names1;
   late List<String> _names2;
-  late double lebar;
-  late double tinggi;
 
   // dragging state
   bool _isDragging = false;
@@ -64,8 +60,6 @@ class _SusunState extends State<Susun> with TickerProviderStateMixin {
     super.initState();
     _row1 = List<Widget>.from(widget.anak.isNotEmpty ? widget.anak[0] : []);
     _names1 = List<String>.from(widget.namaIndeks.isNotEmpty ? widget.namaIndeks[0] : []);
-    tinggi = widget.tinggiPlaceholder;
-    lebar = widget.lebarPlaceholder;
 
     if (widget.duaSusun) {
       _row2 = List<Widget>.from(widget.anak.length > 1 ? widget.anak[1] : []);
@@ -130,7 +124,7 @@ class _SusunState extends State<Susun> with TickerProviderStateMixin {
     for (int i = 0; i <= tempWidgets.length; i++) {
       // if i matches insertAt, place placeholder first
       if (insertAt == i) {
-        items.add(_buildPlaceholder());
+        items.add(widget.placeholder);
         if (i != tempWidgets.length) items.add(SizedBox(width: widget.jarakAnak));
         if (i != tempWidgets.length) items.add(_buildBetweenPemisah());
       }
@@ -299,17 +293,6 @@ class _SusunState extends State<Susun> with TickerProviderStateMixin {
     return feedbackChild;
   }
 
-  // placeholder slot
-  Widget _buildPlaceholder() {
-    return Container(
-      width: lebar,// default placeholder size; ideally should match item size — adjust as needed
-      height: tinggi,
-      decoration: BoxDecoration(
-        color: const Color(0xFF333333).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-    );
-  }
 
   // build pemisah widget with given size and padding
   Widget _buildBetweenPemisah() {

@@ -20,6 +20,7 @@ class CardStatis extends StatefulWidget {
   final bool garisBawahJudul;
 
   final List<String>? gambar;
+  final Widget? gambarWidget;
   final double? besarGambar;
   final double paddingGambar; // padding tiap gambar
   final double tepiRadiusGambar;
@@ -105,6 +106,7 @@ class CardStatis extends StatefulWidget {
     this.garisBawahJudul = false,
 
     this.gambar,
+    this.gambarWidget,
     this.besarGambar,
     this.paddingGambar = 0.0,
     this.tepiRadiusGambar = 0.0,
@@ -304,14 +306,16 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
     );
   }
 
-  Widget _bangunContainerUtama(BuildContext context, Color? color, double blurRadius, double? width, double? height) {
+  Widget _bangunContainerUtama(BuildContext context, Color? color, double blurRadius, double width, double height) {
     final kontrolDatabase = context.watch<KontrolDatabase>();
+    final ukuranPadding = widget.padding ?? 0;
+    final padding = ukuranPadding == 0 ? null : EdgeInsets.all(ukuranPadding);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       width: width,
       height: height,
-      padding: widget.padding == null ? null : EdgeInsets.all(widget.padding!),
+      padding: padding,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(widget.tepiRadius),
@@ -431,6 +435,7 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
             builder: (context, c) {
               double lebar = widget.lebar ?? c.maxWidth;
               double tinggi = widget.tinggi ?? c.maxHeight;
+              
               if (widget.kotak) {
                 final terendah = min(lebar, tinggi);
                 lebar = tinggi = terendah;
@@ -466,37 +471,49 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
   }
 
   Widget _isiKonten(KontrolDatabase kontrolDatabase) {
-    final gambarWidgets = widget.gambar?.map((e) => 
-      AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        width: widget.besarGambar,
-        height: widget.besarGambar,
-        decoration: BoxDecoration(
-          color:widget.warnaGambarColor,
-          borderRadius: BorderRadius.circular(widget.tepiRadiusGambar),
-          gradient: widget.warnaGambarGradient,
-        ),
-        padding: EdgeInsets.all(widget.paddingGambar),
-        child: kontrolDatabase.ambilGambar(e)
-      )
-    ).toList();
+    List<Widget>? bangunGambarWidgets({double? besarGambar}) {
+      return widget.gambar?.map((e) => 
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: besarGambar,
+          height: besarGambar,
+          decoration: BoxDecoration(
+            color:widget.warnaGambarColor,
+            borderRadius: BorderRadius.circular(widget.tepiRadiusGambar),
+            gradient: widget.warnaGambarGradient,
+          ),
+          padding: EdgeInsets.all(widget.paddingGambar),
+          child: kontrolDatabase.ambilGambar(e)
+        )
+      ).toList();
+    }
 
-    List<Widget> gambarFinal = [];
-    if (gambarWidgets != null && gambarWidgets.length > 1 && widget.pemisahGambar != null) {
-      final gambarPemisah = AnimatedContainer(
-        duration: Duration(milliseconds: 150),
-        width: widget.besarPemisahGambar,
-        height: widget.besarPemisahGambar,
-        color: Colors.transparent,
-        child: widget.pemisahGambar,
-      );
-      for (var i = 0; i < gambarWidgets.length - 2; i++) {
-        gambarFinal.add(gambarWidgets[i]);
-        gambarFinal.add(SizedBox(width: widget.jarakGambarPemisah));
-        gambarFinal.add(gambarPemisah);
-        gambarFinal.add(SizedBox(width: widget.jarakGambarPemisah));
-      }
-      gambarFinal.add(gambarWidgets.last);
+    List<Widget> bangunGambarFinal(List<Widget>? gambarWidgets) {
+      List<Widget> gambarFinal = [];
+      if (gambarWidgets != null && gambarWidgets.length > 1) {
+        if (widget.pemisahGambar != null) {
+          final gambarPemisah = Container(
+            width: widget.besarPemisahGambar,
+            height: widget.besarPemisahGambar,
+            color: Colors.transparent,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: widget.pemisahGambar
+            ),
+          );
+          for (var i = 0; i < gambarWidgets.length; i++) {
+            gambarFinal.add(gambarWidgets[i]);
+            if (i != gambarWidgets.length - 1) {
+              gambarFinal.add(SizedBox(width: widget.jarakGambarPemisah));
+              gambarFinal.add(gambarPemisah);
+              gambarFinal.add(SizedBox(width: widget.jarakGambarPemisah));
+            }
+          }
+        } else {
+          gambarFinal = gambarWidgets;
+        }
+      } 
+      return gambarFinal;
     }
 
     final teksWidget = widget.teks != null
@@ -545,63 +562,73 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
     final kotakJarakKonten = widget.jarakKontenUkuran != null 
       ? SizedBox(height: widget.jarakKontenUkuran, width: widget.jarakKontenUkuran)
       : null;
+    
+    /*final maxWidthIsi = widget.susunGambarTeksBaris == Axis.horizontal ? maxWidth * 0.5 : maxWidth;
+    final maxHeightIsi = widget.susunGambarTeksBaris == Axis.vertical ? maxHeight * 0.8 : maxHeight;
 
-    final List<Widget> kolom = [
-      if (gambarFinal.isNotEmpty)
-        LayoutBuilder(builder: (context, c) {
-          final maxWidth = widget.susunGambarTeksBaris == Axis.horizontal ? c.maxWidth * 0.5 : c.maxWidth;
-          final maxHeight = widget.susunGambarTeksBaris == Axis.vertical ? c.maxHeight * 0.8 : c.maxHeight;
+    final jumlahGambar = widget.gambar!.length;
+    final maxWidthGambar = (maxWidthIsi - (widget.besarPemisahGambar * (jumlahGambar - 1) + widget.jarakGambarPemisah * (2 * (jumlahGambar - 1)))) / jumlahGambar;
+    final ukuranGambar = maxWidthGambar.clamp(0, maxHeightIsi).toDouble();*/
 
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: maxHeight,
-              maxWidth: maxWidth,
-            ),
-            child: Align(
+    List<Widget> bangunIsi() {
+      return [
+        if (widget.gambarWidget != null)
+          Expanded(
+            child: widget.gambarWidget!
+          )
+        else if (widget.gambar != null && widget.gambar!.length > 1)
+          Expanded(
+            flex: widget.susunGambarTeksBaris == Axis.vertical ? 3 : 1,
+            child: FittedBox(
+              fit: BoxFit.contain,
               alignment: widget.isiTengah ? Alignment.center : Alignment.centerLeft,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Stack(
-                  children: [
-                    ...gambarFinal
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: widget.isiTengah ? MainAxisAlignment.center : MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ...bangunGambarFinal(bangunGambarWidgets()),
+                ],
               ),
             ),
-          );
-        }),
-      if (gambarFinal.isEmpty && gambarWidgets != null) 
-       FittedBox(
-        fit: BoxFit.scaleDown,
-        child: gambarWidgets.first,
-       ),
-      if (kotakJarakKonten != null) kotakJarakKonten,
-      if (judulWidget != null)
-        Expanded(
-          child: Align(
-            alignment: widget.isiTengah ? Alignment.center : Alignment.centerLeft,
-            child: judulWidget,
           ),
-        ),
-      if (kotakJarakKonten != null) kotakJarakKonten,
-      if (teksWidget != null)
-        Expanded(
-          child: Align(
-            alignment: widget.isiTengah ? Alignment.center : Alignment.centerLeft,
-            child: teksWidget
-          )
-        ),
-    ];
+        if (widget.gambar != null && widget.gambar!.length == 1)
+          widget.susunGambarTeksBaris == Axis.vertical 
+            ? Expanded(
+              flex: 3,
+              child: Align(
+                alignment: widget.isiTengah ? Alignment.center : Alignment.centerLeft,
+                child:bangunGambarWidgets()!.first,
+              )
+            )
+            : bangunGambarWidgets()!.first,
+        if (kotakJarakKonten != null) kotakJarakKonten,
+        if (judulWidget != null)
+          Expanded(
+            child: Align(
+              alignment: widget.isiTengah ? Alignment.center : Alignment.centerLeft,
+              child: judulWidget,
+            ),
+          ),
+        if (kotakJarakKonten != null) kotakJarakKonten,
+        if (teksWidget != null)
+          Expanded(
+            child: Align(
+              alignment: widget.isiTengah ? Alignment.center : Alignment.centerLeft,
+              child: teksWidget
+            )
+          ),
+      ];
+    }
 
     return widget.susunGambarTeksBaris == Axis.horizontal
         ? Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: kolom,
+            children: bangunIsi(),
           )
         : Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: kolom,
+            children: bangunIsi(),
           );
   }
 }

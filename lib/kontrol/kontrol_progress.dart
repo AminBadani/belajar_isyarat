@@ -20,7 +20,7 @@ class KontrolProgress {
     _eProgressBelajar = EProgressBelajar.fromJson(dataProgressBelajar);
     _eProgressKuis = EProgressKuis.fromJson(dataProgressKuis);
 
-    //_sinkronProgressBelajar(kontrolDatabase);
+    _sinkronProgressBelajar(kontrolDatabase);
     return true;
   }
 
@@ -105,7 +105,7 @@ class KontrolProgress {
   void naikkanProgressBelajar(int modul, int materi) {
     if (!ambilStatusMateri(modul, materi)) {
       _eProgressBelajar.modul[indeksModul(modul)]!.status[materi] = true;
-      _eProfil.progressBelajar[materi - 1]++;
+      _eProfil.progressBelajar[modul - 1]++;
     }
   }
 

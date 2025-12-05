@@ -20,8 +20,7 @@ class MenuKuisMenuBody extends StatelessWidget {
 
     return Padding (
       padding: const EdgeInsets.all(20),
-      child: Expanded(
-        child: Container(
+      child: Container(
           decoration: BoxDecoration(
             color: alat.kotakUtama,
             borderRadius: BorderRadius.circular(25),
@@ -110,7 +109,6 @@ class MenuKuisMenuBody extends StatelessWidget {
             ),
           ),
         ),
-      )
     );
   }
 }
@@ -120,30 +118,58 @@ class MenuKuisSoalBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final kKuis = context.read<KontrolKuis>();
     final kKuisSoal = context.select<KontrolKuis, int>(
       (k) => k.ambilAwalAntrianKuis
     );
-    final kKuis = context.read<KontrolKuis>();
+    final kKuisPilihanKotak = context.select<KontrolKuis, int>(
+      (k) => k.pilihanKotak
+    );
+    final kKuisSusunanSatu = context.select<KontrolKuis, List<String>>(
+      (k) => kKuis.susunanJawabanListString
+    );
 
     final soal = kKuis.ambilKuis(kKuisSoal);
 
     switch (soal.mode.index) {
-      case 0: 
+      case 0:
         return SoalModel1(
           penjelas: soal.pertanyaan,
-          gambarSoal: soal.gambar as List<String>,
-          gambarJawaban: soal.opsi as List<String>,
-          tes: false,
+          gambarSoal: soal.gambar,
+          gambarOpsi: soal.opsi,
+          padaSusun: (susunan) {
+            kKuis.aturSusunanJawabanListString(susunan);
+            return;
+          },
+          susunan: kKuisSusunanSatu,
         );
       case 1:
-        return SizedBox.shrink();
+        return SoalModel2(
+          penjelas: soal.pertanyaan,
+          gambarSoal: soal.gambar,
+          gambarOpsi: soal.opsi,
+          padaKlik: (index) {
+            final pilihan = kKuis.aturPilihanKotak(index);
+            return pilihan;
+          },
+          pilihan: kKuisPilihanKotak,
+        );
       case 2:
-        return SizedBox.shrink();
+        return SoalModel3(
+          penjelas: soal.pertanyaan,
+          gambarSoal: soal.gambar,
+          gambarOpsi: soal.opsi,
+          tes: true,
+        );
       case 3:
         return SizedBox.shrink();
       case 4:
-        return SizedBox.shrink();
-      default:
+        return SoalModel5(
+          penjelas: soal.pertanyaan,
+          gambarSoal: soal.gambar,
+          jumlahOpsi: soal.jawaban[0].toString().length,
+        );
+      default :
         return SizedBox.shrink();
     }
   }

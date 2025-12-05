@@ -36,7 +36,14 @@ class KontrolTes extends ChangeNotifier {
     _susunanJawaban = [false];
     _simpananJawaban = [];
     for (var i=0; i<semuaSoal.length; i++){
-      _simpananJawaban.add(false);
+      if (semuaSoal[i].mode.name == "susun") {
+        _simpananJawaban.add(semuaSoal[i].opsi);
+        if (i == 0) {
+          _susunanJawaban = semuaSoal[i].opsi;
+        }
+      } else {
+        _simpananJawaban.add(false);
+      }
     }
     notifyListeners();
   }
@@ -48,10 +55,10 @@ class KontrolTes extends ChangeNotifier {
   int get totalSoal => _totalSoal;
 
   int get pilihanKotak => _pilihanKotak;
-  String get susunanJawabanString => _susunanJawaban.first() == false ? "0" : _susunanJawaban.first();
+  String get susunanJawabanString => _susunanJawaban.first == false ? "0" : _susunanJawaban.first;
   List<dynamic> get susunanJawabanListDynamic => _susunanJawaban;
   List<String> get susunanJawabanListString {
-    if (_susunanJawaban.first() == false) {
+    if (_susunanJawaban.first == false) {
       return ["0"];
     }
     List<String> susunan = [];
@@ -61,7 +68,7 @@ class KontrolTes extends ChangeNotifier {
     return susunan;
   }
   List<List<String>> get susunanJawabanListListString {
-    if (_susunanJawaban.first() == false) {
+    if (_susunanJawaban.first == false) {
       return [["0"], ["0"]];
     }
     List<List<String>> susunan = [];
@@ -120,13 +127,14 @@ class KontrolTes extends ChangeNotifier {
   int indeksSoal(int soal) => soal - 1;
 
   // alat
-  void aturPilihanKotak(int pilihan) {
+  int aturPilihanKotak(int pilihan) {
     if (pilihan == _pilihanKotak) {
       _pilihanKotak = 0;
     } else {
       _pilihanKotak = pilihan;
     }
     notifyListeners();
+    return _pilihanKotak;
   }
   
   void aturSusunanJawabanKosong(String isi) {
@@ -156,14 +164,16 @@ class KontrolTes extends ChangeNotifier {
   void _jawabSoal() {
     final soal = _eTes.modul[indeksModul(_modul)]!.semuaSoal[indeksSoal(_soal)];
     if (soal.mode.name == 'pilih') {
-      if (soal.opsi[pilihanKotak - 1] != _susunanJawaban) {
-        _susunanJawaban = soal.opsi[pilihanKotak - 1];
+      if (pilihanKotak == 0) {
+          _susunanJawaban = [false];
+      }
+      else if (soal.opsi[pilihanKotak - 1] != _susunanJawaban) {
+        _susunanJawaban = [soal.opsi[pilihanKotak - 1]];
       }
     }
     if (_susunanJawaban != _simpananJawaban[indeksSoal(_soal)]) {
-      _simpananJawaban[indeksSoal(_soal)] = _susunanJawaban;
+      _simpananJawaban[indeksSoal(_soal)] = _susunanJawaban.map((j) => j);
     }
-    notifyListeners();
   }
 
   void ajukanTes(KontrolProgress kontrolProgress) {
@@ -183,7 +193,7 @@ class KontrolTes extends ChangeNotifier {
     if (_soal < _eTes.modul[indeksModul(_modul)]!.semuaSoal.length - 1) {
       _jawabSoal();
       _soal++;
-      _susunanJawaban = _simpananJawaban[soal - 1];
+      _susunanJawaban = _simpananJawaban[soal - 1] is List ? _simpananJawaban[soal - 1] : [_simpananJawaban[soal - 1]];
       notifyListeners();
     }
   }
@@ -192,7 +202,7 @@ class KontrolTes extends ChangeNotifier {
     if (_soal > 1) {
       _jawabSoal();
       _soal--;
-      _susunanJawaban = _simpananJawaban[soal - 1];
+      _susunanJawaban = _simpananJawaban[soal - 1] is List ? _simpananJawaban[soal - 1] : [_simpananJawaban[soal - 1]];
       notifyListeners();
     }
   }

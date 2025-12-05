@@ -31,14 +31,13 @@ class MenuTesMenuBody extends StatelessWidget {
             tinggi: null,
             padding: 4,
             tepiRadius: 5,
-            kotakWarna: alat.latarBelakangKembali,
+            kotakGradient: alat.gradientKembali,
             pemisahGarisLuarUkuran: 4,
-            pemisahGarisLuarWarna: alat.garisLuarKembali,
             teks: "<",
             pakaiKlik: true,
             pakaiHover: true,
             padaHoverAnimasi: padaHoverAnimasi1,
-            padaHoverPakaiBayangan: true,
+            padaHoverPemisahGarisLuarWarna: alat.garisLuarHoverAbu,
             padaKlikAnimasi: padaKlikAnimasi1,
             padaKlik: () {
               kTes.tutupMenuTes();
@@ -158,63 +157,78 @@ class MenuTesSoalBody extends StatelessWidget {
     final kMenu = context.read<KontrolMenu>();
     final alat = context.read<AlatApp>();
 
+    final kTesPilihanKotak = context.select<KontrolTes, int>(
+      (k) => kTes.pilihanKotak
+    );
+    final kTesSusunanSatu = context.select<KontrolTes, List<String>>(
+      (k) => kTes.susunanJawabanListString
+    );
+
     final soal = kTes.ambilSoalTes(kTes.modul, kTesSoal);
 
     final body = switch (soal.mode.index) {
-      0 => SoalModel2(
+      0 => SoalModel1(
           penjelas: soal.pertanyaan,
           gambarSoal: soal.gambar,
-          gambarJawaban: soal.opsi,
-          tes: true,
+          gambarOpsi: soal.opsi,
+          padaSusun: (susunan) {
+            kTes.aturSusunanJawabanListString(susunan);
+            return;
+          },
+          susunan: kTesSusunanSatu,
         ),
-      1 => SoalModel1(
+      1 => SoalModel2(
           penjelas: soal.pertanyaan,
           gambarSoal: soal.gambar,
-          gambarJawaban: soal.opsi,
-          tes: true,
+          gambarOpsi: soal.opsi,
+          padaKlik: (index) {
+            final pilihan = kTes.aturPilihanKotak(index);
+            return pilihan;
+          },
+          pilihan: kTesPilihanKotak,
         ),
       2 => SoalModel3(
           penjelas: soal.pertanyaan,
           gambarSoal: soal.gambar,
-          gambarJawaban: soal.opsi,
+          gambarOpsi: soal.opsi,
           tes: true,
         ),
       3 => SizedBox.shrink(),
-      4 => SizedBox.shrink(),
+      4 => SoalModel5(
+          penjelas: soal.pertanyaan,
+          gambarSoal: soal.gambar,
+          jumlahOpsi: soal.jawaban[0].toString().length,
+        ),
       _ => SizedBox.shrink(),
     };
 
-    final bodyAkhir = Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: [
-          CardStatis(
-            lebar: 40,
-            tinggi: null,
-            padding: 4,
-            tepiRadius: 5,
-            kotakWarna: alat.latarBelakangKembali,
-            pemisahGarisLuarUkuran: 4,
-            pemisahGarisLuarWarna: alat.garisLuarKembali,
-            teks: "<",
-            pakaiKlik: true,
-            pakaiHover: true,
-            padaHoverAnimasi: padaHoverAnimasi1,
-            padaHoverPakaiBayangan: true,
-            padaKlikAnimasi: padaKlikAnimasi1,
-            padaKlik: () {
-              kTes.tutupMenuTes();
-              kMenu.bukaMenu(3);
-              return;
-            }
-          ),
-          SizedBox(width: 10),
+    final bodyAkhir = Row(
+      children: [
+        CardStatis(
+          lebar: 40,
+          tinggi: null,
+          padding: 4,
+          tepiRadius: 5,
+          kotakGradient: alat.gradientKembali,
+          pemisahGarisLuarUkuran: 4,
+          teks: "<",
+          pakaiKlik: true,
+          pakaiHover: true,
+          padaHoverAnimasi: padaHoverAnimasi1,
+          padaHoverPemisahGarisLuarWarna: alat.garisLuarHoverAbu,
+          padaKlikAnimasi: padaKlikAnimasi1,
+          padaKlik: () {
+            kTes.tutupMenuTes();
+            kMenu.bukaMenu(3);
+            return;
+          }
+        ),
+        SizedBox(width: 10),
 
-          Expanded(
-            child: body
-          )
-        ],
-      )
+        Expanded(
+          child: body
+        )
+      ],
     );
 
     return bodyAkhir;

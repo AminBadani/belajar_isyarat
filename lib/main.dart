@@ -1,8 +1,7 @@
-import 'package:belajar_isyarat/tampilan/splash_video.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'tampilan/splash_screen.dart';
+import 'tampilan/pembukaan_aplikasi.dart';
 import 'kontrol/inisialisasi_app.dart';
 
 void main() {
@@ -23,7 +22,7 @@ class AplikasiIsyarat extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: PembukaanAplikasi(),
     );
   }
 }

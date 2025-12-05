@@ -10,9 +10,7 @@ import 'package:provider/provider.dart';
 import '../kontrol/kontrol_menu.dart';
 
 class Header extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-
-  const Header({super.key, this.title = "Belajar Isyarat"});
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +22,12 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       preferredSize: const Size.fromHeight(60),
       child: AppBar(
         automaticallyImplyLeading: false,
+        toolbarHeight: 60,
         elevation: 1,
         titleSpacing: 10,
         title: Container(
+          height: 60,
+          width: double.maxFinite,
           decoration: BoxDecoration(
             gradient: alatApp.warnaHeader,
           ),
@@ -54,7 +55,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                               ),
                             ],
                           ),
-                          child: kontrolDatabase.ambilGambar("lib/database/gambar/placeholder.png"),
+                          child: kontrolDatabase.ambilGambar("placeholder"),
                         ),
                         SizedBox(width: 10),
 
@@ -182,7 +183,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                         padaHoverAnimasi: padaHoverAnimasi2,
                         padaKlikAnimasi: padaKlikAnimasi1,
                         padaKlik: () {
-                          //kontrolMenu.bukaMenu(9);
+                          kontrolMenu.bukaMenu(9);
                         },
                       ),
                     ),
@@ -229,8 +230,6 @@ class _FooterModel1State extends State<FooterModel1>
     _controller.dispose();
     super.dispose();
   }
-
-  bool _hoverJawab = false;
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +350,7 @@ class _FooterModel2State extends State<FooterModel2> {
       final kBelajar = context.read<KontrolBelajar>();
       final kMenu = context.read<KontrolMenu>();
       sekarang = context.select<KontrolBelajar, int>((k) => k.materiSekarang);
-      total = kBelajar.totalMateri;
+      total = kBelajar.totalMateriSekarang;
       progress = sekarang / total;
 
       padaSebelumnya = () {kBelajar.aturMateriSebelumnya();};
@@ -403,7 +402,11 @@ class _FooterModel2State extends State<FooterModel2> {
 
           // Progress Bar
           Expanded(
-            child: alat.bangunProgressBar(context, progress, 20)
+            child: alat.bangunProgressBar(
+              context: context,
+              progress: progress, 
+              tinggi: 20
+            )
           ),
           const SizedBox(width: 16),
 

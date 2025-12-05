@@ -1,30 +1,228 @@
 {
     "modul_1": [
         {
+            "suara": "belajar_0",
+            "gambar": ["0"],
+            "judul": "angka 0",
+            "penjelasan": "angka 0 adalah angka"
+        },
+        {
             "suara": "belajar_1",
-            "gambar": ["isyarat_1"],
+            "gambar": ["1"],
             "judul": "angka 1",
             "penjelasan": "angka 1 adalah angka"
         },
         {
             "suara": "belajar_2",
-            "gambar": ["isyarat_2"],
+            "gambar": ["2"],
             "judul": "angka 2",
             "penjelasan": "angka 2 adalah angka"
+        },
+        {
+            "suara": "belajar_3",
+            "gambar": ["3"],
+            "judul": "angka 3",
+            "penjelasan": "angka 3 adalah angka"
+        },
+        {
+            "suara": "belajar_4",
+            "gambar": ["4"],
+            "judul": "angka 4",
+            "penjelasan": "angka 4 adalah angka"
+        },
+        {
+            "suara": "belajar_5",
+            "gambar": ["5"],
+            "judul": "angka 5",
+            "penjelasan": "angka 5 adalah angka"
+        },
+        {
+            "suara": "belajar_6",
+            "gambar": ["6"],
+            "judul": "angka 6",
+            "penjelasan": "angka 6 adalah angka"
+        },
+        {
+            "suara": "belajar_7",
+            "gambar": ["7"],
+            "judul": "angka 7",
+            "penjelasan": "angka 7 adalah angka"
+        },
+        {
+            "suara": "belajar_8",
+            "gambar": ["8"],
+            "judul": "angka 8",
+            "penjelasan": "angka 8 adalah angka"
+        },
+        {
+            "suara": "belajar_9",
+            "gambar": ["9"],
+            "judul": "angka 9",
+            "penjelasan": "angka 9 adalah angka"
         }
     ],
     "modul_2": [
         {
-            "suara": "belajar_3",
-            "gambar": ["isyarat_a"],
+            "suara": "belajar_a",
+            "gambar": ["a"],
             "judul": "huruf a",
             "penjelasan": "a adalah huruf"
+        },
+        {
+            "suara": "belajar_b",
+            "gambar": ["b"],
+            "judul": "huruf b",
+            "penjelasan": "b adalah huruf"
+        },
+        {
+            "suara": "belajar_c",
+            "gambar": ["c"],
+            "judul": "huruf c",
+            "penjelasan": "c adalah huruf"
+        },
+        {
+            "suara": "belajar_d",
+            "gambar": ["d"],
+            "judul": "huruf d",
+            "penjelasan": "d adalah huruf"
+        },
+        {
+            "suara": "belajar_e",
+            "gambar": ["e"],
+            "judul": "huruf e",
+            "penjelasan": "e adalah huruf"
+        },
+        {
+            "suara": "belajar_f",
+            "gambar": ["f"],
+            "judul": "huruf f",
+            "penjelasan": "f adalah huruf"
+        },
+        {
+            "suara": "belajar_g",
+            "gambar": ["g"],
+            "judul": "huruf g",
+            "penjelasan": "g adalah huruf"
+        },
+        {
+            "suara": "belajar_h",
+            "gambar": ["h"],
+            "judul": "huruf h",
+            "penjelasan": "h adalah huruf"
+        },
+        {
+            "suara": "belajar_i",
+            "gambar": ["i"],
+            "judul": "huruf i",
+            "penjelasan": "i adalah huruf"
+        },
+        {
+            "suara": "belajar_j",
+            "gambar": ["j"],
+            "judul": "huruf j",
+            "penjelasan": "j adalah huruf"
+        },
+        {
+            "suara": "belajar_k",
+            "gambar": ["k"],
+            "judul": "huruf k",
+            "penjelasan": "k adalah huruf"
+        },
+        {
+            "suara": "belajar_l",
+            "gambar": ["l"],
+            "judul": "huruf l",
+            "penjelasan": "l adalah huruf"
+        },
+        {
+            "suara": "belajar_m",
+            "gambar": ["m"],
+            "judul": "huruf m",
+            "penjelasan": "m adalah huruf"
+        },
+        {
+            "suara": "belajar_n",
+            "gambar": ["n"],
+            "judul": "huruf n",
+            "penjelasan": "n adalah huruf"
+        },
+        {
+            "suara": "belajar_o",
+            "gambar": ["o"],
+            "judul": "huruf o",
+            "penjelasan": "o adalah huruf"
+        },
+        {
+            "suara": "belajar_p",
+            "gambar": ["p"],
+            "judul": "huruf p",
+            "penjelasan": "p adalah huruf"
+        },
+        {
+            "suara": "belajar_q",
+            "gambar": ["q"],
+            "judul": "huruf q",
+            "penjelasan": "q adalah huruf"
+        },
+        {
+            "suara": "belajar_r",
+            "gambar": ["r"],
+            "judul": "huruf r",
+            "penjelasan": "r adalah huruf"
+        },
+        {
+            "suara": "belajar_s",
+            "gambar": ["s"],
+            "judul": "huruf s",
+            "penjelasan": "s adalah huruf"
+        },
+        {
+            "suara": "belajar_t",
+            "gambar": ["t"],
+            "judul": "huruf t",
+            "penjelasan": "t adalah huruf"
+        },
+        {
+            "suara": "belajar_u",
+            "gambar": ["u"],
+            "judul": "huruf u",
+            "penjelasan": "u adalah huruf"
+        },
+        {
+            "suara": "belajar_v",
+            "gambar": ["v"],
+            "judul": "huruf v",
+            "penjelasan": "v adalah huruf"
+        },
+        {
+            "suara": "belajar_w",
+            "gambar": ["w"],
+            "judul": "huruf w",
+            "penjelasan": "w adalah huruf"
+        },
+        {
+            "suara": "belajar_x",
+            "gambar": ["x"],
+            "judul": "huruf x",
+            "penjelasan": "x adalah huruf"
+        },
+        {
+            "suara": "belajar_y",
+            "gambar": ["y"],
+            "judul": "huruf y",
+            "penjelasan": "y adalah huruf"
+        },
+        {
+            "suara": "belajar_z",
+            "gambar": ["z"],
+            "judul": "huruf z",
+            "penjelasan": "z adalah huruf"
         }
     ],
     "modul_3": [
         {
-            "suara": "belajar_4",
-            "gambar": ["isyarat_i", "isyarat_b", "isyarat_u"],
+            "suara": "belajar_oke",
+            "gambar": ["i", "b", "u"],
             "judul": "'ibu' dalam bahasa isyarat",
             "penjelasan": "ibu adalah orang tua perempuan"
         }

@@ -33,15 +33,17 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
 
   @override
   Widget build(BuildContext context) {
-    final kontrolBelajar = context.watch<KontrolBelajar>();
+    final kBelajar = context.watch<KontrolBelajar>();
     final kontrolProgress = context.read<KontrolProgress>();
     final kontrolMenu = context.read<KontrolMenu>();
     final kontrolTes = context.read<KontrolTes>();
     final alat = context.read<AlatApp>();
 
     final kBelajarProgressMateri = context.select<KontrolBelajar, double> (
-      (k) => k.ambilProgressMateri(kontrolBelajar.modulSekarang, kontrolProgress)
+      (k) => k.ambilProgressMateri(kBelajar.modulSekarang, kontrolProgress)
     );
+
+    final totalMateri = kontrolProgress.ambilStatusBelajar(kBelajar.modulSekarang).length;
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -50,19 +52,22 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
               CardStatis(
                 lebar: 40,
                 tinggi: null,
+                isiTengah: true,
                 padding: 4,
-                tepiRadius: 5,
-                kotakWarna: alat.latarBelakangKembali,
+                tepiRadius: 25,
+                kotakGradient: alat.gradientKembali,
                 pemisahGarisLuarUkuran: 4,
-                pemisahGarisLuarWarna: alat.garisLuarKembali,
-                teks: "<",
+                judul: "<",
+                judulWarna: alat.teksPutihSedang,
+                fontJudul: alat.judul,
                 pakaiKlik: true,
                 pakaiHover: true,
                 padaHoverAnimasi: padaHoverAnimasi1,
-                padaHoverPakaiBayangan: true,
+                padaHoverPemisahGarisLuarWarna: alat.garisLuarHoverAbu,
                 padaKlikAnimasi: padaKlikAnimasi1,
                 padaKlik: () => kontrolMenu.bukaMenu(0)
               ),
+
               SizedBox(width: 20),
               Expanded(
                 child: Scrollbar(              // ← Scrollbar membungkus seluruh konten scroll
@@ -77,7 +82,8 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
                       // === KOLOM ATAS: Judul ===
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: 100,
+                          maxHeight: 120,
+                          maxWidth: double.maxFinite
                         ),
                         child: Container(
                           padding: const EdgeInsets.all(20),
@@ -92,20 +98,36 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    const Text(
+                                    Text(
                                       "Progress Anda: ",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        color: alat.teksKuning
                                       ),
                                     ),
                                     const SizedBox(height: 15),
 
-                                    alat.bangunProgressBar(
-                                      context, 
-                                      kBelajarProgressMateri, 
-                                      20
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "$kBelajarProgressMateri / $totalMateri",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: alat.bangunProgressBar(
+                                            context: context, 
+                                            progress: kBelajarProgressMateri, 
+                                            tinggi: 20
+                                          )
+                                        )
+                                      ]
                                     )
+                                    
                                   ],
                                 ),
                               ),
@@ -122,7 +144,7 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
                                     isiTengah: true,
                                     pemisahGarisLuarUkuran: 7,
                                     tepiRadius: 10,
-                                    judul: "Tes materi ${kontrolBelajar.modulSekarang}",
+                                    judul: "Tes materi ${kBelajar.modulSekarang}",
                                     judulUkuran: 17,
                                     judulWarna: alat.teksPutihSedang,
                                     fontJudul: alat.judul,
@@ -133,7 +155,7 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
                                     padaHoverAnimasi: padaHoverAnimasi1,
                                     padaKlikAnimasi: padaKlikAnimasi1,
                                     padaKlik: () {
-                                      kontrolTes.bukaMenuTes(kontrolBelajar.modulSekarang);
+                                      kontrolTes.bukaMenuTes(kBelajar.modulSekarang);
                                       kontrolMenu.bukaMenu(3);
                                     },
                                   )
@@ -148,24 +170,23 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
                       // === KOLOM BAWAH: List modul ===
                       Center(
                         child: Wrap(
-                          spacing: 20,
+                          spacing: 13,
                           runSpacing: 20,
                           alignment: WrapAlignment.center,
-                          children: List.generate(kontrolBelajar.totalMateri, (i) {
-                            final materi = kontrolBelajar.ambilMateri(kontrolBelajar.modulSekarang, i + 1);
+                          children: List.generate(kBelajar.totalMateriSekarang, (i) {
+                            final materi = kBelajar.ambilMateri(kBelajar.modulSekarang, i + 1);
                             return CardStatis(
                               lebar: 150,
-                              tinggi: 200,
+                              tinggi: 180,
                               padding: 5,
                               tepiRadius: 10,
                               kotakWarna: alat.kotak1,
                               pemisahGarisLuarUkuran: 3,
                               garisLuarUkuran: 4,
                               gambar: materi.gambar,
-                              besarGambar: null,
+                              paddingGambar: 10,
+                              tepiRadiusGambar: 10,
                               warnaGambarColor: alat.kotakPutih,
-                              paddingGambar: 5,
-                              tepiRadiusGambar: 5,
                               judul: materi.judul,
                               judulUkuran: 25,
                               fontJudul: alat.judul,
@@ -179,7 +200,7 @@ class _MenuBelajarMenuBodyState extends State<MenuBelajarMenuBody> {
                               padaKlikAnimasi: padaKlikAnimasi1,
                               susunGambarTeksBaris: Axis.vertical,
                               padaKlik: () {
-                                kontrolBelajar.aturMateriSekarang(kontrolProgress, i + 1);
+                                kBelajar.aturMateriSekarang(kontrolProgress, i + 1);
                                 kontrolMenu.bukaMenu(2);
                               },
                             );
@@ -204,10 +225,10 @@ class MenuBelajarMateriBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final kontrolMenu = context.read<KontrolMenu>();
-    final kontrolBelajar = context.watch<KontrolBelajar>(); //
-    final materi = kontrolBelajar.modulSekarang == 0 || kontrolBelajar.materiSekarang == 0
-      ? kontrolBelajar.ambilMateri(1, 1)
-      : kontrolBelajar.ambilMateri(kontrolBelajar.modulSekarang, kontrolBelajar.materiSekarang);
+    final kBelajar = context.watch<KontrolBelajar>(); //
+    final materi = kBelajar.modulSekarang == 0 || kBelajar.materiSekarang == 0
+      ? kBelajar.ambilMateri(1, 1)
+      : kBelajar.ambilMateri(kBelajar.modulSekarang, kBelajar.materiSekarang);
     final alat = context.read<AlatApp>();
 
     return Padding(
@@ -218,19 +239,21 @@ class MenuBelajarMateriBody extends StatelessWidget {
           CardStatis(
             lebar: 40,
             tinggi: null,
+            isiTengah: true,
             padding: 4,
-            tepiRadius: 5,
-            kotakWarna: alat.latarBelakangKembali,
+            tepiRadius: 25,
+            kotakGradient: alat.gradientKembali,
             pemisahGarisLuarUkuran: 4,
-            pemisahGarisLuarWarna: alat.garisLuarKembali,
-            teks: "<",
+            judul: "<",
+            judulWarna: alat.teksPutihSedang,
+            fontJudul: alat.judul,
             pakaiKlik: true,
             pakaiHover: true,
             padaHoverAnimasi: padaHoverAnimasi1,
-            padaHoverPakaiBayangan: true,
+            padaHoverPemisahGarisLuarWarna: alat.garisLuarHoverAbu,
             padaKlikAnimasi: padaKlikAnimasi1,
             padaKlik: () {
-              kontrolBelajar.tutupMenuMateri();
+              kBelajar.tutupMenuMateri();
               kontrolMenu.bukaMenu(1);
             }
           ),

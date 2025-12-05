@@ -1,92 +1,90 @@
+import 'package:belajar_isyarat/alat/alat_app.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_database.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_kuis.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_tes.dart';
 import 'package:belajar_isyarat/tampilan/card_statis.dart';
+import 'package:belajar_isyarat/tampilan/susun.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class SoalModel1 extends StatefulWidget {
+class SoalModel2 extends StatefulWidget {
   final String penjelas;
   final List<dynamic> gambarSoal;
-  final List<dynamic> gambarJawaban;
-  final bool tes;
+  final List<dynamic> gambarOpsi;
+  final int Function(int index)? padaKlik;
+  final int pilihan;
 
-  const SoalModel1({
+  const SoalModel2({
     super.key,
     required this.penjelas,
     required this.gambarSoal,
-    required this.gambarJawaban,
-    required this.tes,
+    required this.gambarOpsi,
+    this.padaKlik,
+    this.pilihan = 0,
   });
 
   @override
-  State<SoalModel1> createState() => _SoalModel1State();
+  State<SoalModel2> createState() => _SoalModel2State();
 }
 
-class _SoalModel1State extends State<SoalModel1> {
+class _SoalModel2State extends State<SoalModel2> {
+  late AlatApp alat;
+  List<String> gambarSoal = [];
+
+  @override
+  void initState() {
+    super.initState();
+    alat = context.read<AlatApp>();
+    
+    for (var gambar in widget.gambarSoal) {
+      gambarSoal.add(gambar.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final kDatabase = context.read<KontrolDatabase>();
-    final kTes = context.read<KontrolTes>();
-    final kKuis = context.read<KontrolKuis>();
-    late int pilihanJawaban;
-    
-    if (widget.tes) {
-      pilihanJawaban = context.select<KontrolTes, int>(
-        (k) => k.pilihanKotak
-      );
-    } else {
-      pilihanJawaban = context.select<KontrolKuis, int>(
-        (k) => k.pilihanKotak
-      );
+    List<String> gambarSoal = [];
+    for (var gambar in widget.gambarSoal) {
+      gambarSoal.add(gambar.toString());
     }
     
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-          ),
-          child: Row(
-            children: [
-              // Kotak gambar
-              widget.gambarSoal.isEmpty 
-                ? SizedBox.shrink()
-                : SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: Row(
-                    children: [
-                      for (var gambar in widget.gambarSoal) kDatabase.ambilGambar(gambar.toString())
-                    ],
-                  ),
-                ),
-              const SizedBox(width: 16),
-
-              // Kotak penjelas
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    widget.penjelas,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-            ],
+        Expanded(
+          flex: 8,
+          child: CardStatis(
+            padding: 10,
+            tepiRadius: 10,
+            isiTengah: true,
+            kotakWarna: alat.kotakUtama,
+            gambar: gambarSoal,
+            besarGambar: null,
+            paddingGambar: 10,
+            tepiRadiusGambar: 10,
+            warnaGambarColor: alat.kotakPutih,
+            jarakGambarPemisah: 10,
+            pemisahGambar: Icon(
+              Icons.double_arrow_rounded,
+              size: 10,
+            ),
+            besarPemisahGambar: 10,
+            judul: widget.penjelas,
+            fontJudul: alat.judul,
+            judulUkuran: 17,
+            judulWarna: alat.teksPutihSedang,
+            susunGambarTeksBaris: Axis.vertical,
           ),
         ),
 
-        const SizedBox(height: 30),
+        const SizedBox(height: 10),
 
         // ============================
         // Card Jawaban Dinamis
         // ============================
         Expanded(
+          flex: 6,
           child: LayoutBuilder(
             builder: (context, constraints) {
               final parentWidth = constraints.maxWidth;
@@ -99,30 +97,30 @@ class _SoalModel1State extends State<SoalModel1> {
                   runSpacing: 20,
                   alignment: WrapAlignment.center,     // <= PENTING: agar ditengah
                   children: List.generate(
-                    widget.gambarJawaban.length,
+                    widget.gambarOpsi.length,
                     (i) {
-                      return SizedBox(
-                        width: side,
-                        height: side,
-                        child: CardStatis(
+                      return CardStatis(
                           lebar: side,
                           tinggi: side,
                           padding: 10,
                           tepiRadius: 10,
+                          kotakWarna: alat.kotak6,
+                          pemisahGarisLuarUkuran: 10,
+                          pemisahGarisLuarWarna: alat.outline6,
                           garisLuarUkuran: 10,
-                          gambar: [widget.gambarJawaban[i].toString()],
+                          gambar: [widget.gambarOpsi[i].toString()],
                           pakaiKlik: true,
                           pakaiHover: true,
                           padaHoverAnimasi: padaHoverAnimasi1,
-                          padaHoverPakaiBayangan: true,
-                          padaHoverGarisLuarWarna: Colors.white,
+                          padaHoverPemisahGarisLuarWarna: widget.pilihan == i+1 ? alat.garisLuarHoverAbu : alat.outline6,
+                          padaHoverGarisLuarWarna: widget.pilihan == i+1 ? null : alat.garisLuarHoverAbu,
                           padaKlikAnimasi: padaKlikAnimasi1,
-                          padaKlik: widget.tes
-                              ? () => kTes.aturPilihanKotak(i + 1)
-                              : () => kKuis.aturPilihanKotak(i + 1),
-                          dipilih: pilihanJawaban == i + 1,
-                        ),
-                      );
+                          padaKlik: widget.padaKlik != null ? () {
+                            widget.padaKlik!(i + 1);
+                           } : null,
+                          dipilih: widget.pilihan == i+1,
+                          padaDipilihGradientGarisLuar: alat.terpilih,
+                        );
                     },
                   ),
                 ),
@@ -135,207 +133,311 @@ class _SoalModel1State extends State<SoalModel1> {
   }
 }
 
-// soal model 2
-class SoalModel2 extends StatefulWidget {
-  final String penjelas;
-  final List<dynamic> gambarSoal;
-  final List<dynamic> gambarJawaban;
-  final bool tes;
+class ReorderableOpsiWrap extends StatefulWidget {
+  final List<String> gambarOpsi;
+  final Function(List<String>)? onReorder; // kembalikan list terbaru
 
-  const SoalModel2({
+  const ReorderableOpsiWrap({
     super.key,
-    required this.penjelas,
-    required this.gambarSoal,
-    required this.gambarJawaban,
-    required this.tes,
+    required this.gambarOpsi,
+    this.onReorder,
   });
 
   @override
-  State<SoalModel2> createState() => _SoalModel2State();
+  State<ReorderableOpsiWrap> createState() => _ReorderableOpsiWrapState();
 }
 
-class _SoalModel2State extends State<SoalModel2> {
-  late List<String> items;
-  int? draggingIndex;
-  
+class _ReorderableOpsiWrapState extends State<ReorderableOpsiWrap> {
+  late List<String> daftar;
+
   @override
   void initState() {
     super.initState();
+    daftar = List.of(widget.gambarOpsi);
+  }
 
-    if (widget.tes) {
-      items = List.from(context.read<KontrolTes>().susunanJawabanListString);
-    } else {
-      items = List.from(context.read<KontrolKuis>().susunanJawabanListString);
-    }
+  void tukar(int from, int to) {
+    final item = daftar.removeAt(from);
+    daftar.insert(to, item);
+    widget.onReorder?.call(daftar);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final kDatabase = context.read<KontrolDatabase>();
-    final kTes = context.read<KontrolTes>();
-    final kKuis = context.read<KontrolKuis>();
-    List<String> susunanOpsi = [];
-    late List<String> susunanJawaban;
+    return Expanded(
+      flex: 6,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final parentWidth = constraints.maxWidth;
+          final parentHeight = constraints.maxHeight;
+          final side = min(parentWidth, parentHeight);
 
-    for (var opsi in widget.gambarJawaban) {
-      susunanOpsi.add(opsi.toString());
-    }
-    
-    if (widget.tes) {
-      susunanJawaban = context.select<KontrolTes, List<String>>(
-        (k) => k.susunanJawabanListString
-      );
-    } else {
-      susunanJawaban = context.select<KontrolKuis, List<String>>(
-        (k) => k.susunanJawabanListString
-      );
-    }
-    
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-          ),
-          child: Row(
-            children: [
-              // Kotak gambar
-              widget.gambarSoal.isEmpty 
-                ? SizedBox.shrink()
-                : SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: Row(
-                    children: [
-                      for (var gambar in widget.gambarSoal) kDatabase.ambilGambar(gambar.toString())
-                    ],
-                  ),
-                ),
-              const SizedBox(width: 16),
-
-              // Kotak penjelas
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    widget.penjelas,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 30),
-
-        // ============================
-        // Card Jawaban Dinamis
-        // ============================
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final parentWidth = constraints.maxWidth;
-              final parentHeight = constraints.maxHeight;
-
-              final side = min(parentWidth / 4 - 20, parentHeight / 4 - 20);
-
-              return Center(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 20,
-                  runSpacing: 20,
-                  children: List.generate(items.length, (i) {
-                    final isDragging = draggingIndex == i;
-
-                    return DragTarget<int>(
-                      onWillAccept: (from) {
-                        // geser item saat hover
-                        if (from != i) {
-                          final moved = items.removeAt(from!);
-                          items.insert(i, moved);
-                          draggingIndex = i;
-                        }
-                        return true;
-                      },
-                      onAccept: (_) {
-                        draggingIndex = null;
-                        if (widget.tes) {
-                          kTes.aturSusunanJawabanListString(items);
-                        } else {
-                          kKuis.aturSusunanJawabanListString(items);
-                        }
-                        draggingIndex = null;
-                      },
-
-                      builder: (context, candidate, reject) {
-                        if (isDragging) {
-                          return Opacity(
-                            opacity: 0.2,
-                            child: Container(
-                              width: side,
-                              height: side,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          );
-                        }
-
-                        return Draggable<int>(
-                          data: i,
-                          onDragStarted: () {
-                            setState(() => draggingIndex = i);
-                          },
-                          onDragEnd: (_) {
-                            setState(() => draggingIndex = null);
-                          },
-                          feedback: SizedBox(
-                            width: side,
-                            height: side,
-                            child: CardStatis(
-                              lebar: side,
-                              tinggi: side,
-                              gambar: [susunanJawaban[i]],
-                              padding: 10,
-                              tepiRadius: 10,
-                              garisLuarUkuran: 10,
-                              pakaiHover: true,
-                              padaHoverAnimasi: padaHoverAnimasi1,
-                              padaHoverPakaiBayangan: true,
-                              padaHoverGarisLuarWarna: Colors.blue,
-                            ),
-                          ),
-                          childWhenDragging: SizedBox(
-                            width: side,
-                            height: side,
-                            child: Opacity(
-                              opacity: 0.0,
-                            ),
-                          ),
+          return Center(
+            child: Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              alignment: WrapAlignment.center,
+              children: List.generate(
+                daftar.length,
+                (i) {
+                  return DragTarget<int>(
+                    onWillAccept: (_) => true,
+                    onAcceptWithDetails: (details) {
+                      final from = details.data;
+                      final to = i;
+                      tukar(from, to);
+                    },
+                    builder: (context, candidate, rejected) {
+                      return LongPressDraggable<int>(
+                        data: i,
+                        feedback: Opacity(
+                          opacity: 0.7,
                           child: SizedBox(
                             width: side,
                             height: side,
                             child: CardStatis(
                               lebar: side,
                               tinggi: side,
-                              gambar: [susunanJawaban[i]],
                               padding: 10,
                               tepiRadius: 10,
+                              kotakWarna: Colors.blueGrey.shade100,
+                              pemisahGarisLuarUkuran: 10,
                               garisLuarUkuran: 10,
-                              pakaiHover: true,
-                              padaHoverAnimasi: padaHoverAnimasi1,
-                              padaHoverPakaiBayangan: true,
-                              padaHoverGarisLuarWarna: Colors.blue,
+                              gambar: [daftar[i]],
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }),
+                        ),
+                        childWhenDragging: Opacity(
+                          opacity: 0.3,
+                          child: SizedBox(
+                            width: side,
+                            height: side,
+                            child: CardStatis(
+                              lebar: side,
+                              tinggi: side,
+                              padding: 10,
+                              tepiRadius: 10,
+                              kotakWarna: Colors.blueGrey.shade100,
+                              pemisahGarisLuarUkuran: 10,
+                              garisLuarUkuran: 10,
+                              gambar: [daftar[i]],
+                            ),
+                          ),
+                        ),
+                        child: SizedBox(
+                          width: side,
+                          height: side,
+                          child: CardStatis(
+                            lebar: side,
+                            tinggi: side,
+                            padding: 10,
+                            tepiRadius: 10,
+                            kotakWarna: Colors.blueGrey.shade100,
+                            pemisahGarisLuarUkuran: 10,
+                            garisLuarUkuran: 10,
+                            gambar: [daftar[i]],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// soal model 2
+class SoalModel1 extends StatefulWidget {
+  final String penjelas;
+  final List<dynamic> gambarSoal;
+  final List<dynamic> gambarOpsi;
+  final Function(List<String> susunan)? padaSusun;
+  final List<String> susunan;
+
+  const SoalModel1({
+    super.key,
+    required this.penjelas,
+    required this.gambarSoal,
+    required this.gambarOpsi,
+    this.padaSusun,
+    required this.susunan
+  });
+
+  @override
+  State<SoalModel1> createState() => _SoalModel1State();
+}
+
+class _SoalModel1State extends State<SoalModel1> {
+  late AlatApp alat;
+  List<String> gambarSoal = [];
+  late List<String> gambarJawaban;
+  int? objekDrag;
+  int? objekDiganti;
+
+  @override
+  void initState() {
+    super.initState();
+    alat = context.read<AlatApp>();
+    
+    for (var gambar in widget.gambarSoal) {
+      gambarSoal.add(gambar.toString());
+    }
+    gambarJawaban = widget.susunan;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    void tukar(int dari, int ke) {
+      final item = gambarJawaban.removeAt(dari);
+      gambarJawaban.insert(ke, item);
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          flex: 8,
+          child: CardStatis(
+            padding: 10,
+            tepiRadius: 10,
+            isiTengah: true,
+            kotakWarna: alat.kotakUtama,
+            gambar: gambarSoal,
+            paddingGambar: 10,
+            tepiRadiusGambar: 10,
+            warnaGambarColor: alat.kotakPutih,
+            jarakGambarPemisah: 10,
+            pemisahGambar: Icon(
+              Icons.double_arrow_rounded,
+              size: 10,
+            ),
+            besarPemisahGambar: 10,
+            judul: widget.penjelas,
+            fontJudul: alat.judul,
+            judulUkuran: 17,
+            judulWarna: alat.teksPutihSedang,
+            susunGambarTeksBaris: Axis.vertical,
+          ),
+        ),
+        const SizedBox(height: 30),
+
+        // ============================
+        // Card Jawaban Dinamis
+        // ============================
+        Expanded(
+          flex: 6,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final parentWidth = constraints.maxWidth;
+              final parentHeight = constraints.maxHeight;
+              final side = min(parentWidth, parentHeight);
+
+              return Center(
+                child: Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(
+                    gambarJawaban.length,
+                    (i) {
+                      return DragTarget<int>(
+                        onWillAcceptWithDetails: (details) {
+                          /*final from = details.data;
+                          final to = i;
+                          objekDrag = from;
+                          objekDiganti = to;
+                          tukar(from, to);*/
+                          return true;
+                        },
+                        onLeave: (details) {
+                          /*final from = objekDiganti;
+                          final to = objekDrag;
+
+                          // Cegah crash
+                          if (from == null || to == null) {
+                            objekDrag = objekDiganti = null;
+                            return;
+                          }
+
+                          objekDrag = objekDiganti = null;
+                          tukar(from, to);*/
+                        },
+                        onAcceptWithDetails: (details) {
+                          final from = details.data;
+                          final to = i;
+                          tukar(from, to);
+                          if (widget.padaSusun != null) {
+                            widget.padaSusun!(gambarJawaban);
+                          }
+                        },
+                        builder: (context, candidate, rejected) {
+                          return Draggable<int>(
+                            data: i,
+                            feedback: 
+  Consumer<AlatApp>(
+  builder: (context, alat, _) => Material(
+    type: MaterialType.transparency,
+    child: Opacity(
+                              opacity: 0.7,
+                              child: SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: CardStatis(
+                                  lebar: 100,
+                                  tinggi: 100,
+                                  padding: 10,
+                                  tepiRadius: 10,
+                                  kotakWarna: Colors.blueGrey.shade100,
+                                  pemisahGarisLuarUkuran: 10,
+                                  garisLuarUkuran: 10,
+                                  gambar: [gambarJawaban[i]],
+                                ),
+                              ),
+                            ),),),
+                            childWhenDragging: Opacity(
+                              opacity: 0.3,
+                              child: SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: CardStatis(
+                                  lebar: 100,
+                                  tinggi: 100,
+                                  padding: 10,
+                                  tepiRadius: 10,
+                                  kotakWarna: Colors.blueGrey.shade100,
+                                  pemisahGarisLuarUkuran: 10,
+                                  garisLuarUkuran: 10,
+                                  gambar: [gambarJawaban[i]],
+                                ),
+                              ),
+                            ),
+                            child: AbsorbPointer(
+                              child: SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: CardStatis(
+                                  lebar: 100,
+                                  tinggi: 100,
+                                  padding: 10,
+                                  tepiRadius: 10,
+                                  kotakWarna: Colors.blueGrey.shade100,
+                                  pemisahGarisLuarUkuran: 10,
+                                  garisLuarUkuran: 10,
+                                  gambar: [gambarJawaban[i]],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               );
             },
@@ -350,14 +452,14 @@ class _SoalModel2State extends State<SoalModel2> {
 class SoalModel3 extends StatefulWidget {
   final String penjelas;
   final List<dynamic> gambarSoal;
-  final List<dynamic> gambarJawaban;
+  final List<dynamic> gambarOpsi;
   final bool tes;
 
   const SoalModel3({
     super.key,
     required this.penjelas,
     required this.gambarSoal,
-    required this.gambarJawaban,
+    required this.gambarOpsi,
     required this.tes,
   });
 
@@ -366,193 +468,73 @@ class SoalModel3 extends StatefulWidget {
 }
 
 class _SoalModel3State extends State<SoalModel3> {
+  List<String> soal = [];
+  List<String> items = [];
+  late AlatApp alat;
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (var gambar in widget.gambarSoal) {
+      soal.add(gambar.toString());
+    }
+    for (var gambar in widget.gambarOpsi) {
+      items.add(gambar.toString());
+    }
+    alat = context.read<AlatApp>();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final kDatabase = context.read<KontrolDatabase>();
-    final kTes = context.read<KontrolTes>();
-    final kKuis = context.read<KontrolKuis>();
-    List<List<String>> susunanOpsiKiriKanan = [[], []];
-    List<List<String>> barang = [[], []];
-    int? draggingIndex; // index card yang sedang didrag
-    late List<List<String>> susunanJawaban;
-
-    for (var soal in widget.gambarJawaban) { //kanan
-      susunanOpsiKiriKanan[1].add(soal.toString());
-    }
-    for (var opsi in widget.gambarJawaban) { //kiri
-      susunanOpsiKiriKanan[0].add(opsi.toString());
-    }
-    
-    if (widget.tes) {
-      susunanJawaban = context.select<KontrolTes, List<List<String>>>(
-        (k) => k.susunanJawabanListListString
-      );
-      kTes.aturSusunanJawabanListListString(susunanOpsiKiriKanan);
-      barang = susunanJawaban;
-    } else {
-      susunanJawaban = context.select<KontrolKuis, List<List<String>>>(
-        (k) => k.susunanJawabanListListString
-      );
-      kKuis.aturSusunanJawabanListListString(susunanOpsiKiriKanan);
-      barang = susunanJawaban;
-    }
-
-    Expanded buatDraggable(List<String> items, List<String> susunanOpsi){
-      return Expanded(
-        child: Column(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final parentWidth = constraints.maxWidth;
-                final parentHeight = constraints.maxHeight;
-
-                final side = min(parentWidth / 4 - 20, parentHeight / 4 - 20);
-
-                return Center(
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 20,
-                    runSpacing: 20,
-                    children: List.generate(items.length, (i) {
-                      final isDragging = draggingIndex == i;
-
-                      return DragTarget<int>(
-                        onWillAccept: (from) {
-                          // geser item saat hover
-                          if (from != i) {
-                            final moved = items.removeAt(from!);
-                            items.insert(i, moved);
-                            draggingIndex = i;
-                          }
-                          return true;
-                        },
-                        onAccept: (_) {
-                          if (widget.tes) {
-                            kTes.aturSusunanJawabanListString(items);
-                          } else {
-                            kKuis.aturSusunanJawabanListString(items);
-                          }
-                          draggingIndex = null;
-                          setState(() {});
-                        },
-
-                        builder: (context, candidate, reject) {
-                          if (isDragging) {
-                            return Opacity(
-                              opacity: 0.2,
-                              child: Container(
-                                width: side,
-                                height: side,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            );
-                          }
-
-                          return Draggable<int>(
-                            data: i,
-                            onDragStarted: () {
-                              draggingIndex = i;
-                              setState(() {});
-                            },
-                            onDragEnd: (_) {
-                              draggingIndex = null;
-                              setState(() {});
-                            },
-                            feedback: SizedBox(
-                              width: side,
-                              height: side,
-                              child: CardStatis(
-                                lebar: side,
-                                tinggi: side,
-                                gambar: [susunanOpsi[i]],
-                                padding: 10,
-                                tepiRadius: 10,
-                                garisLuarUkuran: 10,
-                                pakaiHover: true,
-                                padaHoverAnimasi: padaHoverAnimasi1,
-                                padaHoverPakaiBayangan: true,
-                                padaHoverGarisLuarWarna: Colors.blue,
-                              ),
-                            ),
-                            childWhenDragging: SizedBox(
-                              width: side,
-                              height: side,
-                              child: Opacity(
-                                opacity: 0.0,
-                                child: CardStatis(
-                                  lebar: side,
-                                  tinggi: side,
-                                  gambar: [susunanOpsi[i]],
-                                  padding: 10,
-                                  tepiRadius: 10,
-                                  garisLuarUkuran: 10,
-                                  pakaiHover: true,
-                                  padaHoverAnimasi: padaHoverAnimasi1,
-                                  padaHoverPakaiBayangan: true,
-                                  padaHoverGarisLuarWarna: Colors.blue,
-                                ),
-                              ),
-                            ),
-                            child: SizedBox(
-                              width: side,
-                              height: side,
-                              child: CardStatis(
-                                lebar: side,
-                                tinggi: side,
-                                gambar: [susunanOpsi[i]],
-                                padding: 10,
-                                tepiRadius: 10,
-                                garisLuarUkuran: 10,
-                                pakaiHover: true,
-                                padaHoverAnimasi: padaHoverAnimasi1,
-                                padaHoverPakaiBayangan: true,
-                                padaHoverGarisLuarWarna: Colors.blue,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-                  ),
-                );
-              },
-            ),
-          ]
-        )
-      );
-    }
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buatDraggable(susunanJawaban[0], barang[0]),
-          
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(susunanJawaban[0].length, (i) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 22),
-                  child: Text(
-                    "=",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                );
-              }),
-            ),
-          ),
-
-          buatDraggable(susunanJawaban[1], barang[1]),
-          
-        ],
+    return Expanded(
+      child: Susun(
+        duaSusun: true,
+        jumlahAnak: soal.length, 
+        jarakAnak: 8, 
+        pemisah: Text(
+          "=",
+          style: TextStyle(
+            color: alat.teksHitam,
+            fontFamily: alat.judul,
+            fontSize: 20,
+            fontWeight: FontWeight.bold
+          )
+        ), 
+        besarPemisah: 20, 
+        jarakPemisah: 10, 
+        placeholder: CardStatis(kotak: true), 
+        anak: [
+          List.generate(items.length, (i) {
+            return CardStatis(
+              kotak: true,
+              padding: 10,
+              tepiRadius: 10,
+              kotakWarna: alat.kotakUtama,
+              warnaGambarColor: alat.kotakPutih,
+              gambar: [items[i]],
+              tepiRadiusGambar: 10,
+            );
+          }),
+          List.generate(soal.length, (i) {
+            return CardStatis(
+              kotak: true,
+              padding: 10,
+              tepiRadius: 10,
+              kotakWarna: alat.kotakUtama,
+              warnaGambarColor: alat.kotakPutih,
+              gambar: [soal[i]],
+              tepiRadiusGambar: 10,
+            );
+          })
+        ], 
+        animasiDrag: 1, 
+        namaIndeks: [items, soal]
       )
     );
   }
 }
+/*// soal model 4
 class TesBodyBawah extends StatelessWidget {
   final List<Widget> leftItems;
   final List<Widget> rightItems;
@@ -732,7 +714,7 @@ class _TesItemDraggableState extends State<TesItemDraggable>
       ),
     );
   }
-}
+}*/
 
 // soal model 4
 class DragContent {
@@ -1031,15 +1013,15 @@ class _TesDragItemState extends State<TesDragItem>
 
 // soal model 5
 class SoalModel5 extends StatefulWidget {
-  final List<String> gambarList; // contoh: ["g1","g2","g3"]
   final String penjelas;
-  final int jumlahKotak; // jumlah kotak huruf
+  final List<dynamic> gambarSoal;
+  final int jumlahOpsi;
 
   const SoalModel5({
     super.key,
-    required this.gambarList,
     required this.penjelas,
-    required this.jumlahKotak,
+    required this.gambarSoal,
+    required this.jumlahOpsi,
   });
 
   @override
@@ -1047,14 +1029,20 @@ class SoalModel5 extends StatefulWidget {
 }
 
 class _SoalModel5State extends State<SoalModel5> {
+  late List<String> soal;
   late List<String?> jawaban;
   late List<FocusNode> fokus;
+  late AlatApp alat;
 
   @override
   void initState() {
     super.initState();
-    jawaban = List<String?>.filled(widget.jumlahKotak, null);
-    fokus = List.generate(widget.jumlahKotak, (_) => FocusNode());
+    for (var gambar in widget.gambarSoal) {
+      soal.add(gambar.toString());
+    }
+    jawaban = List<String?>.filled(widget.jumlahOpsi, null);
+    fokus = List.generate(widget.jumlahOpsi, (_) => FocusNode());
+    alat = context.read<AlatApp>();
   }
 
   @override
@@ -1113,49 +1101,34 @@ class _SoalModel5State extends State<SoalModel5> {
     );
   }
 
-  Widget _buildGambar(String label) {
-    return Container(
-      width: 90,
-      height: 90,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-        border: Border.all(width: 2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.center,
-      child: Text(label),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         // =================== BAGIAN ATAS ===================
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            border: Border.all(width: 2),
-          ),
-          child: Column(
-            children: [
-              // list gambar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: widget.gambarList
-                    .map((g) => _buildGambar("gambar"))
-                    .toList(),
-              ),
-              const SizedBox(height: 12),
-              // teks penjelas
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(width: 2),
-                ),
-                child: Text(widget.penjelas),
-              ),
-            ],
+        Expanded(
+          flex: 8,
+          child: CardStatis(
+            padding: 10,
+            tepiRadius: 10,
+            isiTengah: true,
+            kotakWarna: alat.kotakUtama,
+            gambar: soal,
+            besarGambar: null,
+            paddingGambar: 10,
+            tepiRadiusGambar: 10,
+            warnaGambarColor: alat.kotakPutih,
+            jarakGambarPemisah: 10,
+            pemisahGambar: Icon(
+              Icons.double_arrow_rounded,
+              size: 10,
+            ),
+            besarPemisahGambar: 10,
+            judul: widget.penjelas,
+            fontJudul: alat.judul,
+            judulUkuran: 17,
+            judulWarna: alat.teksPutihSedang,
+            susunGambarTeksBaris: Axis.vertical,
           ),
         ),
 
@@ -1170,7 +1143,7 @@ class _SoalModel5State extends State<SoalModel5> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              widget.jumlahKotak,
+              widget.jumlahOpsi,
               (i) => _buildKotakHuruf(i),
             ),
           ),
@@ -1179,3 +1152,397 @@ class _SoalModel5State extends State<SoalModel5> {
     );
   }
 }
+
+
+// lama
+/*
+class SoalModel2null extends StatefulWidget {
+  final String penjelas;
+  final List<dynamic> gambarSoal;
+  final List<dynamic> gambarOpsi;
+  final Function(List<String> susunan)? padaSusun;
+
+  const SoalModel2null({
+    super.key,
+    required this.penjelas,
+    required this.gambarSoal,
+    required this.gambarOpsi,
+    this.padaSusun,
+  });
+
+  @override
+  State<SoalModel2null> createState() => _SoalModel2State();
+}
+
+class _SoalModel2nState extends State<SoalModel2> {
+  List<String> soal = [];
+  List<String> items = [];
+  int? draggingIndex;
+  late AlatApp alat;
+  
+  @override
+  void initState() {
+    super.initState();
+
+    for (var gambar in widget.gambarSoal) {
+      soal.add(gambar.toString());
+    }
+    for (var gambar in widget.gambarOpsi) {
+      items.add(gambar.toString());
+    }
+    alat = context.read<AlatApp>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          flex: 8,
+          child: CardStatis(
+            padding: 10,
+            tepiRadius: 10,
+            isiTengah: true,
+            kotakWarna: alat.kotakUtama,
+            gambar: soal,
+            besarGambar: null,
+            paddingGambar: 10,
+            tepiRadiusGambar: 10,
+            warnaGambarColor: alat.kotakPutih,
+            jarakGambarPemisah: 10,
+            pemisahGambar: Icon(
+              Icons.double_arrow_rounded,
+              size: 10,
+            ),
+            besarPemisahGambar: 10,
+            judul: widget.penjelas,
+            fontJudul: alat.judul,
+            judulUkuran: 17,
+            judulWarna: alat.teksPutihSedang,
+            susunGambarTeksBaris: Axis.vertical,
+          ),
+        ),
+        const SizedBox(height: 30),
+
+        // ============================
+        // Card Jawaban Dinamis
+        // ============================
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final parentWidth = constraints.maxWidth;
+              final parentHeight = constraints.maxHeight;
+
+              final side = min(parentWidth / 4 - 20, parentHeight / 4 - 20);
+
+              return Center(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: List.generate(items.length, (i) {
+                    final isDragging = draggingIndex == i;
+
+                    return DragTarget<int>(
+                      onWillAccept: (from) {
+                        // geser item saat hover
+                        if (from != i) {
+                          final moved = items.removeAt(from!);
+                          items.insert(i, moved);
+                          draggingIndex = i;
+                        }
+                        return true;
+                      },
+                      onAccept: (_) {
+                        draggingIndex = null;
+                        if (widget.tes) {
+                          kTes.aturSusunanJawabanListString(items);
+                        } else {
+                          kKuis.aturSusunanJawabanListString(items);
+                        }
+                        draggingIndex = null;
+                      },
+
+                      builder: (context, candidate, reject) {
+                        if (isDragging) {
+                          return Opacity(
+                            opacity: 0.2,
+                            child: Container(
+                              width: side,
+                              height: side,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Draggable<int>(
+                          data: i,
+                          onDragStarted: () {
+                            setState(() => draggingIndex = i);
+                          },
+                          onDragEnd: (_) {
+                            setState(() => draggingIndex = null);
+                          },
+                          feedback: SizedBox(
+                            width: side,
+                            height: side,
+                            child: CardStatis(
+                              lebar: side,
+                              tinggi: side,
+                              gambar: [susunanJawaban[i]],
+                              padding: 10,
+                              tepiRadius: 10,
+                              garisLuarUkuran: 10,
+                              pakaiHover: true,
+                              padaHoverAnimasi: padaHoverAnimasi1,
+                              padaHoverPakaiBayangan: true,
+                              padaHoverGarisLuarWarna: Colors.blue,
+                            ),
+                          ),
+                          childWhenDragging: SizedBox(
+                            width: side,
+                            height: side,
+                            child: Opacity(
+                              opacity: 0.0,
+                            ),
+                          ),
+                          child: SizedBox(
+                            width: side,
+                            height: side,
+                            child: CardStatis(
+                              lebar: side,
+                              tinggi: side,
+                              gambar: [susunanJawaban[i]],
+                              padding: 10,
+                              tepiRadius: 10,
+                              garisLuarUkuran: 10,
+                              pakaiHover: true,
+                              padaHoverAnimasi: padaHoverAnimasi1,
+                              padaHoverPakaiBayangan: true,
+                              padaHoverGarisLuarWarna: Colors.blue,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class SoalModel3null extends StatefulWidget {
+  final String penjelas;
+  final List<dynamic> gambarSoal;
+  final List<dynamic> gambarJawaban;
+  final bool tes;
+
+  const SoalModel3null({
+    super.key,
+    required this.penjelas,
+    required this.gambarSoal,
+    required this.gambarJawaban,
+    required this.tes,
+  });
+
+  @override
+  State<SoalModel3null> createState() => _SoalModel3State();
+}
+
+class _SoalModel3State extends State<SoalModel3> {
+  
+
+  @override
+  Widget build(BuildContext context) {
+    final kDatabase = context.read<KontrolDatabase>();
+    final kTes = context.read<KontrolTes>();
+    final kKuis = context.read<KontrolKuis>();
+    List<List<String>> susunanOpsiKiriKanan = [[], []];
+    List<List<String>> barang = [[], []];
+    int? draggingIndex; // index card yang sedang didrag
+    late List<List<String>> susunanJawaban;
+
+    for (var soal in widget.gambarJawaban) { //kanan
+      susunanOpsiKiriKanan[1].add(soal.toString());
+    }
+    for (var opsi in widget.gambarJawaban) { //kiri
+      susunanOpsiKiriKanan[0].add(opsi.toString());
+    }
+    
+    if (widget.tes) {
+      susunanJawaban = context.select<KontrolTes, List<List<String>>>(
+        (k) => k.susunanJawabanListListString
+      );
+      kTes.aturSusunanJawabanListListString(susunanOpsiKiriKanan);
+      barang = susunanJawaban;
+    } else {
+      susunanJawaban = context.select<KontrolKuis, List<List<String>>>(
+        (k) => k.susunanJawabanListListString
+      );
+      kKuis.aturSusunanJawabanListListString(susunanOpsiKiriKanan);
+      barang = susunanJawaban;
+    }
+
+    Expanded buatDraggable(List<String> items, List<String> susunanOpsi){
+      return Expanded(
+        child: Column(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final parentWidth = constraints.maxWidth;
+                final parentHeight = constraints.maxHeight;
+
+                final side = min(parentWidth / 4 - 20, parentHeight / 4 - 20);
+
+                return Center(
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 20,
+                    runSpacing: 20,
+                    children: List.generate(items.length, (i) {
+                      final isDragging = draggingIndex == i;
+
+                      return DragTarget<int>(
+                        onWillAccept: (from) {
+                          // geser item saat hover
+                          if (from != i) {
+                            final moved = items.removeAt(from!);
+                            items.insert(i, moved);
+                            draggingIndex = i;
+                          }
+                          return true;
+                        },
+                        onAccept: (_) {
+                          if (widget.tes) {
+                            kTes.aturSusunanJawabanListString(items);
+                          } else {
+                            kKuis.aturSusunanJawabanListString(items);
+                          }
+                          draggingIndex = null;
+                          setState(() {});
+                        },
+
+                        builder: (context, candidate, reject) {
+                          if (isDragging) {
+                            return Opacity(
+                              opacity: 0.2,
+                              child: Container(
+                                width: side,
+                                height: side,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Draggable<int>(
+                            data: i,
+                            onDragStarted: () {
+                              draggingIndex = i;
+                              setState(() {});
+                            },
+                            onDragEnd: (_) {
+                              draggingIndex = null;
+                              setState(() {});
+                            },
+                            feedback: SizedBox(
+                              width: side,
+                              height: side,
+                              child: CardStatis(
+                                lebar: side,
+                                tinggi: side,
+                                gambar: [susunanOpsi[i]],
+                                padding: 10,
+                                tepiRadius: 10,
+                                garisLuarUkuran: 10,
+                                pakaiHover: true,
+                                padaHoverAnimasi: padaHoverAnimasi1,
+                                padaHoverPakaiBayangan: true,
+                                padaHoverGarisLuarWarna: Colors.blue,
+                              ),
+                            ),
+                            childWhenDragging: SizedBox(
+                              width: side,
+                              height: side,
+                              child: Opacity(
+                                opacity: 0.0,
+                                child: CardStatis(
+                                  lebar: side,
+                                  tinggi: side,
+                                  gambar: [susunanOpsi[i]],
+                                  padding: 10,
+                                  tepiRadius: 10,
+                                  garisLuarUkuran: 10,
+                                  pakaiHover: true,
+                                  padaHoverAnimasi: padaHoverAnimasi1,
+                                  padaHoverPakaiBayangan: true,
+                                  padaHoverGarisLuarWarna: Colors.blue,
+                                ),
+                              ),
+                            ),
+                            child: SizedBox(
+                              width: side,
+                              height: side,
+                              child: CardStatis(
+                                lebar: side,
+                                tinggi: side,
+                                gambar: [susunanOpsi[i]],
+                                padding: 10,
+                                tepiRadius: 10,
+                                garisLuarUkuran: 10,
+                                pakaiHover: true,
+                                padaHoverAnimasi: padaHoverAnimasi1,
+                                padaHoverPakaiBayangan: true,
+                                padaHoverGarisLuarWarna: Colors.blue,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
+                  ),
+                );
+              },
+            ),
+          ]
+        )
+      );
+    }
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          buatDraggable(susunanJawaban[0], barang[0]),
+          
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(susunanJawaban[0].length, (i) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 22),
+                  child: Text(
+                    "=",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                );
+              }),
+            ),
+          ),
+
+          buatDraggable(susunanJawaban[1], barang[1]),
+        ],
+      )
+    );
+  }
+}*/

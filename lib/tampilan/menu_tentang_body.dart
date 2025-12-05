@@ -1,7 +1,5 @@
 import 'package:belajar_isyarat/alat/alat_app.dart';
 import 'package:belajar_isyarat/tampilan/card_statis.dart';
-import 'package:belajar_isyarat/tampilan/kotak_umum.dart';
-import 'package:belajar_isyarat/tampilan/garis_luar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

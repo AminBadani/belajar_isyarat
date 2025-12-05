@@ -10,36 +10,63 @@
         },
         {
             "suara": "tes_2",
-            "gambar": ["isyarat_b"],
+            "gambar": ["b"],
             "pertanyaan": "tangan diatas melambangkan huruf?",
             "opsi": ["huruf_a", "huruf_b", "huruf_c"],
             "jawaban": ["huruf_b"],
             "mode": "pilih"
-        }
-    ],
-    "modul_2": [
+        },
         {
             "suara": "tes_3",
-            "gambar": ["isyarat_b", "isyarat_c", "isyarat_a"],
+            "gambar": ["b", "c", "a"],
             "pertanyaan": "hubungkan isyarat ke huruf yang benar!",
             "opsi": ["huruf_a", "huruf_b", "huruf_c"],
             "jawaban": [
                 ["huruf_a", "huruf_b", "huruf_c"], 
-                ["isyarat_a", "isyarat_b", "isyarat_c"]
+                ["a", "b", "c"]
             ],
             "mode": "hubungkan"
         },
         {
             "suara": "tes_4",
-            "gambar": ["isyarat_i", null, "isyarat_u"],
+            "gambar": ["i", null, "u"],
             "pertanyaan": "isi huruf yang kosong agar menjadi kata 'ibu'!",
-            "opsi": ["isyarat_a", "isyarat_b", "isyarat_c"],
-            "jawaban": ["isyarat_b"],
+            "opsi": ["a", "b", "c"],
+            "jawaban": ["b"],
             "mode": "lengkapi"
         },
         {
             "suara": "tes_5",
-            "gambar": ["isyarat_n", "isyarat_u", "isyarat_l", "isyarat_l"],
+            "gambar": ["n", "u", "l", "l"],
+            "pertanyaan": "apa arti kata tersebut?",
+            "opsi": [],
+            "jawaban": ["null"],
+            "mode": "artikan"
+        }
+    ],
+    "modul_2": [
+        {
+            "suara": "tes_3",
+            "gambar": ["b", "c", "a"],
+            "pertanyaan": "hubungkan isyarat ke huruf yang benar!",
+            "opsi": ["huruf_a", "huruf_b", "huruf_c"],
+            "jawaban": [
+                ["huruf_a", "huruf_b", "huruf_c"], 
+                ["a", "b", "c"]
+            ],
+            "mode": "hubungkan"
+        },
+        {
+            "suara": "tes_4",
+            "gambar": ["i", null, "u"],
+            "pertanyaan": "isi huruf yang kosong agar menjadi kata 'ibu'!",
+            "opsi": ["a", "b", "c"],
+            "jawaban": ["b"],
+            "mode": "lengkapi"
+        },
+        {
+            "suara": "tes_5",
+            "gambar": ["n", "u", "l", "l"],
             "pertanyaan": "apa arti kata tersebut?",
             "opsi": [],
             "jawaban": ["null"],

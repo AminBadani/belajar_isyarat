@@ -22,10 +22,13 @@ class KontrolBelajar extends ChangeNotifier {
   // getter
   int get modulSekarang => _modul;
   int get materiSekarang => _materi;
-  int get totalMateri {
+  int get totalMateriSekarang {
     if (_modul == 0) return 0;
     return _eBelajar.modul[indeksModul(_modul)]!.materi.length;
   }
+
+  int get totalModul => _eBelajar.modul.length;
+  int totalMateri(int modul) => _eBelajar.modul[indeksModul(modul)]!.materi.length;
 
   int ambilJumlahGambar(int modul, int materi) {
     return _eBelajar.modul[indeksModul(modul)]!.materi[indeksMateri(materi)].gambar.length;

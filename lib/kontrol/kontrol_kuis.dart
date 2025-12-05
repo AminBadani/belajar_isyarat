@@ -62,10 +62,10 @@ class KontrolKuis extends ChangeNotifier {
   bool? get jawabanBenar => _jawabanBenar;
 
   int get pilihanKotak => _pilihanKotak;
-  String get susunanJawabanString => _susunanJawaban.first() == false ? "0" : _susunanJawaban.first();
+  String get susunanJawabanString => _susunanJawaban.first == false ? "0" : _susunanJawaban.first;
   List<dynamic> get susunanJawabanListDynamic => _susunanJawaban;
   List<String> get susunanJawabanListString {
-    if (_susunanJawaban.first() == false) {
+    if (_susunanJawaban.first == false) {
       return ["0"];
     }
     List<String> susunan = [];
@@ -75,7 +75,7 @@ class KontrolKuis extends ChangeNotifier {
     return susunan;
   }
   List<List<String>> get susunanJawabanListListString {
-    if (_susunanJawaban.first() == false) {
+    if (_susunanJawaban.first == false) {
       return [["0"], ["0"]];
     }
     List<List<String>> susunan = [];
@@ -85,7 +85,7 @@ class KontrolKuis extends ChangeNotifier {
     return susunan;
   }
 
-  bool bolehAjukanKuis() => _susunanJawaban.first() == false ? false : true;
+  bool bolehAjukanKuis() => _susunanJawaban.first == false ? false : true;
 
   ESoalKuis ambilKuis(int idKuis) {
     return _eKuis.semuaSoal[idKuis - 1];
@@ -148,13 +148,14 @@ class KontrolKuis extends ChangeNotifier {
   int indeksSoal(int soal) => soal - 1;
 
   // alat
-  void aturPilihanKotak(int pilihan) {
+  int aturPilihanKotak(int pilihan) {
     if (pilihan == _pilihanKotak) {
       _pilihanKotak = 0;
     } else {
       _pilihanKotak = pilihan;
     }
     notifyListeners();
+    return _pilihanKotak;
   }
 
   void aturSusunanJawabanKosong(String isi) {
@@ -181,13 +182,14 @@ class KontrolKuis extends ChangeNotifier {
     notifyListeners();
   }
 
-  void ajukanKuis(KontrolProgress kontrolProgress) {
+  int ajukanKuis(KontrolProgress kontrolProgress) {
     final benar = cekJawaban(_eKuis.semuaSoal[ambilAwalAntrianKuis].jawaban);
     
     kontrolProgress.naikkanProgressKuis(ambilAwalAntrianKuis, benar);
     _skorKuis = kontrolProgress.progressKuis;
     _jawabanBenar = benar;
     notifyListeners();
+    return cekNilaiKuis(benar);
   } // TODO: kembangkan pengecekkan soal
 
   void aturSoalSelanjutnya(KontrolProgress kontrolProgress) {
