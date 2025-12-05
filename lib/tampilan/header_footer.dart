@@ -24,7 +24,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         automaticallyImplyLeading: false,
         toolbarHeight: 60,
         elevation: 1,
-        titleSpacing: 10,
+        titleSpacing: 0,
         title: Container(
           height: 60,
           width: double.maxFinite,
@@ -60,7 +60,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                         SizedBox(width: 10),
 
                         CardStatis(
-                          lebar: 180,
+                          lebar: 200,
                           tinggi: 40,
                           padding: 5,
                           tepiRadius: 5,
