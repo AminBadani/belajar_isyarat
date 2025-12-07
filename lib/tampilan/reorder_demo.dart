@@ -18,6 +18,7 @@ class _PowerPointPageSwitcherState extends State<PowerPointPageSwitcher>
   late final AnimationController _controller;
   late final Animation<double> _slide;
   late final Animation<double> _bounce;
+  late Animation<Offset> slide;
 
   bool forward = true; // true = maju (+), false = mundur (-)
 
@@ -41,6 +42,24 @@ class _PowerPointPageSwitcherState extends State<PowerPointPageSwitcher>
       parent: _controller,
       curve: const Interval(0.6, 1.0, curve: Curves.elasticOut),
     );
+
+    slide = TweenSequence<Offset>([
+          TweenSequenceItem(
+            tween: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: const Offset(-0.1, 0),
+            ).chain(CurveTween(curve: Curves.easeOut)), 
+            weight: 70
+          ),
+
+          TweenSequenceItem(
+            tween: Tween<Offset>(
+              begin: const Offset(-0.1, 0),
+              end: const Offset(0, 0),
+            ).chain(CurveTween(curve: Curves.easeInOut)), 
+            weight: 30
+          )
+        ]).animate(_controller);
   }
 
   @override
@@ -53,14 +72,14 @@ class _PowerPointPageSwitcherState extends State<PowerPointPageSwitcher>
   ///     TRIGGER NEXT / PREV PAGE
   /// -------------------------------------------------------
   void nextPage() {
-    forward = true;
-    _controller.forward(from: 0);
+    /*forward = true;
+    _controller.forward(from: 0);*/
     setState(() => currentPage = 1);
   }
 
   void prevPage() {
-    forward = false;
-    _controller.forward(from: 0);
+    /*forward = false;
+    _controller.forward(from: 0);*/
     setState(() => currentPage = 0);
   }
 
@@ -68,44 +87,40 @@ class _PowerPointPageSwitcherState extends State<PowerPointPageSwitcher>
   ///     WIDGET KOTAK DENGAN ANIMASI
   /// -------------------------------------------------------
   Widget _buildAnimatedBox(int i) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (_, child) {
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) {
         // OFFSET UTAMA
-        double dx = 0;
-        double dy = 0;
+        final Animation<Offset> slideIn = TweenSequence<Offset>([
+          TweenSequenceItem(
+            tween: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: const Offset(-0.1, 0),
+            ).chain(CurveTween(curve: Curves.easeOut)), 
+            weight: 70
+          ),
 
-        if (forward) {
-          // MAJU (+)
-          dx = lerpDouble(0, -200, _slide.value)!; // keluar kiri
+          TweenSequenceItem(
+            tween: Tween<Offset>(
+              begin: const Offset(-0.1, 0),
+              end: const Offset(0, 0),
+            ).chain(CurveTween(curve: Curves.easeInOut)), 
+            weight: 30
+          )
+        ]).animate(animation);
 
-          if (_slide.value > 0.5) {
-            // masuk dari kanan → bounce kiri → balik
-            dx = lerpDouble(
-              300, // start offscreen right
-              0,  // final position
-              _bounce.value,
-            )!;
-          }
-        } else {
-          // MUNDUR (-)
-          dy = lerpDouble(0, -200, _slide.value)!; // keluar atas
+        final Animation<Offset> slideOut = Tween<Offset>(
+              begin: const Offset(0, 0),
+              end: const Offset(-1, 0),
+            ).chain(CurveTween(curve: Curves.easeInOut)).animate(animation);
 
-          if (_slide.value > 0.5) {
-            dy = lerpDouble(
-              300, // start from bottom
-              0,   // final position
-              _bounce.value,
-            )!;
-          }
-        }
-
-        return Transform.translate(
-          offset: Offset(dx, dy),
-          child: child,
+        return SlideTransition(
+          position: animation.status == AnimationStatus.forward ? slideIn : slideOut,
+          child: child
         );
       },
       child: Container(
+        key: ValueKey("box-$i-page$currentPage"),
         width: 120,
         height: 120,
         margin: const EdgeInsets.all(8),
@@ -140,7 +155,7 @@ class _PowerPointPageSwitcherState extends State<PowerPointPageSwitcher>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("PowerPoint Style Animation")),
-      body: Center(child: _buildPage()),
+      body: Center(child: SlideGridAnimated(duration: Duration(milliseconds: 250), page: currentPage, maju: true,boxes: List.generate(4, (i) => _buildAnimatedBox(i)))),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(

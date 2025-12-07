@@ -30,6 +30,8 @@ class _PembukaanAplikasiState extends State<PembukaanAplikasi> {
   // -------------------- VIDEO --------------------
   Future<void> _initVideo() async {
     try {
+      _videoDone = true;
+      _tryNavigate();
       _controller = VideoPlayerController.asset(
         "lib/database/video/opening_app.mp4",
       )
