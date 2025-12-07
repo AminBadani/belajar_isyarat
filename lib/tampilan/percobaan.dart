@@ -15,7 +15,7 @@ class _PercobaanState extends State<Percobaan> {
   @override
   Widget build(BuildContext context) {
     final alat = context.read<AlatApp>();
-    return ReorderDemo();
+    return PowerPointPageSwitcher();
   }
 }
 

@@ -20,6 +20,7 @@ class AlatApp {
   Color get warnaKembaliUngu => Color(0xFFb3a2e8);
 
   Color get hiasanKotak => Color(0xFFf2f2f2);
+  double get ukuranFooter => 60;
 
   // warna kotak
   Color get kotak1 => Color(0xFFF9D260);

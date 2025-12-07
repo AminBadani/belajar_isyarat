@@ -35,11 +35,31 @@ class KontrolTes extends ChangeNotifier {
     _pilihanKotak = 0;
     _susunanJawaban = [false];
     _simpananJawaban = [];
+
+    // isi simpanan jawaban sesuai mode nya
     for (var i=0; i<semuaSoal.length; i++){
       if (semuaSoal[i].mode.name == "susun") {
         _simpananJawaban.add(semuaSoal[i].opsi);
         if (i == 0) {
           _susunanJawaban = semuaSoal[i].opsi;
+        }
+      } else if (semuaSoal[i].mode.name == "hubungkan") {
+        _simpananJawaban.add([semuaSoal[i].opsi, semuaSoal[i].gambar]);
+        if (i == 0) {
+          _susunanJawaban = [semuaSoal[i].opsi, semuaSoal[i].gambar];
+        }
+      } else if (semuaSoal[i].mode.name == "lengkapi") {
+        _simpananJawaban.add(semuaSoal[i].gambar);
+        if (i == 0) {
+          _susunanJawaban = [semuaSoal[i].gambar];
+        }
+      } else if (semuaSoal[i].mode.name == "artikan") {
+        _simpananJawaban.add([]);
+        for (var j = 0; j < semuaSoal[i].jawaban.length; j++) {
+          _simpananJawaban[i].add(null);
+        }
+        if (i == 0) {
+          _susunanJawaban = _simpananJawaban[i];
         }
       } else {
         _simpananJawaban.add(false);
@@ -58,25 +78,48 @@ class KontrolTes extends ChangeNotifier {
   String get susunanJawabanString => _susunanJawaban.first == false ? "0" : _susunanJawaban.first;
   List<dynamic> get susunanJawabanListDynamic => _susunanJawaban;
   List<String> get susunanJawabanListString {
-    if (_susunanJawaban.first == false) {
+    if (_susunanJawaban.isEmpty || _susunanJawaban.first == false) {
       return ["0"];
     }
-    List<String> susunan = [];
+    List<String> hasil = [];
     for (var isi in _susunanJawaban) {
-      susunan.add(isi.toString());
+      if (isi is String) {
+        hasil.add(isi);
+      } 
+      else if (isi is List) {
+        // flatten list satu level
+        hasil.addAll(isi.map((e) => e.toString()));
+      }
     }
-    return susunan;
+    return hasil;
   }
+
   List<List<String>> get susunanJawabanListListString {
-    if (_susunanJawaban.first == false) {
-      return [["0"], ["0"]];
+    if (_susunanJawaban.isEmpty || _susunanJawaban.first == false) {
+      return [
+        ["0"],
+        ["0"]
+      ];
     }
-    List<List<String>> susunan = [];
+
+    List<List<String>> hasil = [];
+
     for (var isi in _susunanJawaban) {
-      susunan.add(isi);
+      if (isi is String) {
+        hasil.add([isi]);
+      }
+      else if (isi is List<String>) {
+        hasil.add(isi);
+      }
+      else if (isi is List) {
+        // pastikan semua elemen jadi string
+        hasil.add(isi.map((e) => e.toString()).toList());
+      }
     }
-    return susunan;
+
+    return hasil;
   }
+
   List<dynamic> get simpananJawaban => _simpananJawaban;
 
   bool bolehAjukanTes() {
@@ -137,7 +180,7 @@ class KontrolTes extends ChangeNotifier {
     return _pilihanKotak;
   }
   
-  void aturSusunanJawabanKosong(String isi) {
+  void aturSusunanJawabanKosong() {
     _susunanJawaban.clear();
     _susunanJawaban.add(false);
     notifyListeners();
@@ -150,13 +193,16 @@ class KontrolTes extends ChangeNotifier {
   }
 
   void aturSusunanJawabanListString(List<String> isi) {
-    _susunanJawaban.clear();
     _susunanJawaban = isi;
     notifyListeners();
   }
 
   void aturSusunanJawabanListListString(List<List<String>> isi) {
-    _susunanJawaban.clear();
+    _susunanJawaban = isi;
+    notifyListeners();
+  }
+
+  void aturSusunanJawabanListDynamic(List<dynamic> isi) {
     _susunanJawaban = isi;
     notifyListeners();
   }
@@ -172,7 +218,11 @@ class KontrolTes extends ChangeNotifier {
       }
     }
     if (_susunanJawaban != _simpananJawaban[indeksSoal(_soal)]) {
-      _simpananJawaban[indeksSoal(_soal)] = _susunanJawaban.map((j) => j);
+      if (soal.mode.name == "pilih") {
+        _simpananJawaban[indeksSoal(_soal)] = _susunanJawaban.map((j) => j);
+      } else {
+        _simpananJawaban[indeksSoal(_soal)] = _susunanJawaban;
+      }
     }
   }
 
@@ -190,10 +240,10 @@ class KontrolTes extends ChangeNotifier {
   }
 
   void aturSoalSelanjutnya() {
-    if (_soal < _eTes.modul[indeksModul(_modul)]!.semuaSoal.length - 1) {
+    if (_soal < _eTes.modul[indeksModul(_modul)]!.semuaSoal.length) {
       _jawabSoal();
       _soal++;
-      _susunanJawaban = _simpananJawaban[soal - 1] is List ? _simpananJawaban[soal - 1] : [_simpananJawaban[soal - 1]];
+      _susunanJawaban = _simpananJawaban[_soal - 1] is List ? _simpananJawaban[_soal - 1] : [_simpananJawaban[_soal - 1]];
       notifyListeners();
     }
   }
@@ -202,7 +252,7 @@ class KontrolTes extends ChangeNotifier {
     if (_soal > 1) {
       _jawabSoal();
       _soal--;
-      _susunanJawaban = _simpananJawaban[soal - 1] is List ? _simpananJawaban[soal - 1] : [_simpananJawaban[soal - 1]];
+      _susunanJawaban = _simpananJawaban[_soal - 1] is List ? _simpananJawaban[_soal - 1] : [_simpananJawaban[_soal - 1]];
       notifyListeners();
     }
   }

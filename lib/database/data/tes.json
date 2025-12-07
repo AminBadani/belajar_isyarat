@@ -40,7 +40,7 @@
             "gambar": ["n", "u", "l", "l"],
             "pertanyaan": "apa arti kata tersebut?",
             "opsi": [],
-            "jawaban": ["null"],
+            "jawaban": ["n", "u", "l", "l"],
             "mode": "artikan"
         }
     ],

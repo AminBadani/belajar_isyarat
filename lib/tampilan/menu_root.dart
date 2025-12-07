@@ -57,7 +57,9 @@ class _MenuRootState extends State<MenuRoot> {
       backgroundColor: alatApp.latarBelakang,
       appBar: const Header(),
 
-      body: Padding(
+      body: SafeArea(
+  bottom: true,
+  child: Padding(
         padding: EdgeInsets.all(20),
         child: IndexedStack(
           index: kontrolMenu.halaman,
@@ -74,7 +76,7 @@ class _MenuRootState extends State<MenuRoot> {
             const Percobaan()
           ],
         ),
-      ),
+      ),),
 
       bottomNavigationBar: Builder(
         builder: (_) {

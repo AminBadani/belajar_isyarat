@@ -20,6 +20,7 @@ class CardStatis extends StatefulWidget {
   final bool garisBawahJudul;
 
   final List<String>? gambar;
+  final List<Image>? gambarImage;
   final Widget? gambarWidget;
   final double? besarGambar;
   final double paddingGambar; // padding tiap gambar
@@ -33,8 +34,10 @@ class CardStatis extends StatefulWidget {
 
   final double? jarakKontenUkuran;
 
+  final Widget? teksWidget;
   final Color teksWarna;
   final LinearGradient? teksGradient;
+  final Widget? judulWidget;
   final Color judulWarna;
   final LinearGradient? judulGradient;
 
@@ -81,7 +84,6 @@ class CardStatis extends StatefulWidget {
 
   final Function(AnimationController)? padaKlikAnimasi;
   final Function(AnimationController)? padaHoverAnimasi;
-  final Function(AnimationController)? padaMasukAnimasi;
 
   final bool dipilih;
   final Function(AnimationController)? padaDipilihAnimasi;
@@ -89,6 +91,8 @@ class CardStatis extends StatefulWidget {
   final LinearGradient? padaDipilihGradientGarisLuar;
   final Color? padaDipilihWarnaPemisahGarisLuar;
   final LinearGradient? padaDipilihGradientPemisahGarisLuar;
+
+  final bool tanpaProvider;
 
   const CardStatis({
     super.key,
@@ -106,6 +110,7 @@ class CardStatis extends StatefulWidget {
     this.garisBawahJudul = false,
 
     this.gambar,
+    this.gambarImage,
     this.gambarWidget,
     this.besarGambar,
     this.paddingGambar = 0.0,
@@ -119,8 +124,10 @@ class CardStatis extends StatefulWidget {
 
     this.jarakKontenUkuran,
 
+    this.teksWidget,
     this.teksWarna = Colors.black,
     this.teksGradient,
+    this.judulWidget,
     this.judulWarna = Colors.black,
     this.judulGradient,
 
@@ -166,14 +173,15 @@ class CardStatis extends StatefulWidget {
 
     this.padaKlikAnimasi,
     this.padaHoverAnimasi,
-    this.padaMasukAnimasi,
 
     this.dipilih = false,
     this.padaDipilihAnimasi,
     this.padaDipilihWarnaGarisLuar,
     this.padaDipilihGradientGarisLuar,
     this.padaDipilihWarnaPemisahGarisLuar,
-    this.padaDipilihGradientPemisahGarisLuar
+    this.padaDipilihGradientPemisahGarisLuar,
+
+    this.tanpaProvider = false,
   });
 
   @override
@@ -185,7 +193,6 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
   late Animation<double> _hoverValue;
   late AnimationController _hoverController;
   late AnimationController _klikController;
-  late AnimationController _masukController;
   late AnimationController _dipilihController;
   late AlatApp alat;
 
@@ -196,7 +203,9 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    alat = context.read<AlatApp>();
+    if (!widget.tanpaProvider) {
+      alat = context.read<AlatApp>();
+    }
     _hoverSmooth = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -226,31 +235,18 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 200),
     );*/
 
-    _masukController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-
     _dipilihController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-
-    // Jika tidak ada animasi masuk yang disediakan, set nilai masuk controller ke 1
-    // sehingga card tidak memulai dari skala 0.7 (terlalu kecil).
-    if (widget.padaMasukAnimasi != null) {
-      widget.padaMasukAnimasi!(_masukController);
-    } else {
-      _masukController.value = 1.0;
-    }
   }
 
   @override
   void dispose() {
     _hoverController.dispose();
     _klikController.dispose();
-    _masukController.dispose();
     _dipilihController.dispose();
+    _hoverSmooth.dispose();
     super.dispose();
   }
 
@@ -307,7 +303,7 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
   }
 
   Widget _bangunContainerUtama(BuildContext context, Color? color, double blurRadius, double width, double height) {
-    final kontrolDatabase = context.watch<KontrolDatabase>();
+    final KontrolDatabase? kontrolDatabase = widget.tanpaProvider ? null : context.read<KontrolDatabase>();
     final ukuranPadding = widget.padding ?? 0;
     final padding = ukuranPadding == 0 ? null : EdgeInsets.all(ukuranPadding);
 
@@ -350,10 +346,6 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
 
     // klik scale (tetap aman)
     final scaleKlik = 1.0 - (_klikController.value * 0.08); // kurangi dampak klik sedikit
-
-    // masuk scale dan rotate (kurangi nilai rotasi & buat masukScale lebih aman)
-    final masukScale = 0.9 + (0.1 * _masukController.value); // range 0.9..1.0
-    final masukRotate = (-8 + (8 * _masukController.value)) * (pi / 180); // -8..0 deg
 
     // Helper clamp
     double clampDouble(double x, double min, double max) {
@@ -410,13 +402,13 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
             final hoverRotate = 0.01 * hoverValue;
 
             // gabungkan scale (hover * klik * masuk)
-            final rawFinalScale = hoverScale * scaleKlik * masukScale;
+            final rawFinalScale = hoverScale * scaleKlik;
 
             // CLAMP agar tidak menjadi sangat kecil / sangat besar
             final finalScale = clampDouble(rawFinalScale, 0.85, 1.12);
 
             // gabungkan rotasi (hover + masuk)
-            final finalRotate = hoverRotate + masukRotate;
+            final finalRotate = hoverRotate;
 
             // debug prints (comment kalau sudah ok)
             // debugPrint('finalScale=$finalScale hoverVal=$hoverValue dx=${dragOffset.dx}'); sips
@@ -433,8 +425,8 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
           },
           child: LayoutBuilder(
             builder: (context, c) {
-              double lebar = widget.lebar ?? c.maxWidth;
-              double tinggi = widget.tinggi ?? c.maxHeight;
+              double lebar = (widget.lebar ?? c.maxWidth) - widget.pemisahGarisLuarUkuran - widget.garisLuarUkuran;
+              double tinggi = (widget.tinggi ?? c.maxHeight) - widget.pemisahGarisLuarUkuran - widget.garisLuarUkuran;
               
               if (widget.kotak) {
                 final terendah = min(lebar, tinggi);
@@ -470,9 +462,13 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
     );
   }
 
-  Widget _isiKonten(KontrolDatabase kontrolDatabase) {
+  Widget _isiKonten(KontrolDatabase? kontrolDatabase) {
     List<Widget>? bangunGambarWidgets({double? besarGambar}) {
-      return widget.gambar?.map((e) => 
+      List<dynamic>? gambar = widget.tanpaProvider 
+        ? widget.gambarImage     // List<Image>
+        : widget.gambar;         // List<String>
+
+      return gambar?.map((e) => 
         AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           width: besarGambar,
@@ -483,7 +479,9 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
             gradient: widget.warnaGambarGradient,
           ),
           padding: EdgeInsets.all(widget.paddingGambar),
-          child: kontrolDatabase.ambilGambar(e)
+          child: widget.tanpaProvider 
+            ? (e is Image ? e : SizedBox()) 
+            : kontrolDatabase!.ambilGambar(e as String),
         )
       ).toList();
     }
@@ -516,8 +514,9 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
       return gambarFinal;
     }
 
-    final teksWidget = widget.teks != null
-        ? (widget.teksGradient != null 
+    final teksWidget = widget.teksWidget
+        ?? (widget.teks != null
+        ? (widget.teksGradient != null && !widget.tanpaProvider
             ? alat.bangunTeksGradien(
                 teks: widget.teks!, 
                 warna: widget.teksGradient!, 
@@ -534,10 +533,11 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
                 ),
               )
             )
-        : null;
+        : null);
 
-    final judulWidget = widget.judul != null
-        ? (widget.judulGradient != null 
+    final judulWidget = widget.judulWidget 
+        ?? (widget.judul != null
+        ? (widget.judulGradient != null && !widget.tanpaProvider
             ? alat.bangunTeksGradien(
                 teks: widget.judul!, 
                 warna: widget.judulGradient!, 
@@ -557,7 +557,7 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
               textAlign: widget.teksTengah ? TextAlign.center : TextAlign.left,
             )
           )
-        : null;
+        : null);
 
     final kotakJarakKonten = widget.jarakKontenUkuran != null 
       ? SizedBox(height: widget.jarakKontenUkuran, width: widget.jarakKontenUkuran)
@@ -569,14 +569,21 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
     final jumlahGambar = widget.gambar!.length;
     final maxWidthGambar = (maxWidthIsi - (widget.besarPemisahGambar * (jumlahGambar - 1) + widget.jarakGambarPemisah * (2 * (jumlahGambar - 1)))) / jumlahGambar;
     final ukuranGambar = maxWidthGambar.clamp(0, maxHeightIsi).toDouble();*/
+    int jumlahGambar = widget.tanpaProvider
+    ? (widget.gambarImage?.length ?? 0)
+    : (widget.gambar?.length ?? 0);
+    final pakaiBanyakGambar = jumlahGambar > 1;
+    final pakaiSatuGambar = jumlahGambar == 1;
+
 
     List<Widget> bangunIsi() {
       return [
         if (widget.gambarWidget != null)
           Expanded(
+            flex: widget.susunGambarTeksBaris == Axis.vertical ? 3 : 1,
             child: widget.gambarWidget!
           )
-        else if (widget.gambar != null && widget.gambar!.length > 1)
+        else if (pakaiBanyakGambar)
           Expanded(
             flex: widget.susunGambarTeksBaris == Axis.vertical ? 3 : 1,
             child: FittedBox(
@@ -590,8 +597,8 @@ class _CardStatisState extends State<CardStatis> with TickerProviderStateMixin {
                 ],
               ),
             ),
-          ),
-        if (widget.gambar != null && widget.gambar!.length == 1)
+          )
+        else if (pakaiSatuGambar)
           widget.susunGambarTeksBaris == Axis.vertical 
             ? Expanded(
               flex: 3,

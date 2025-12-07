@@ -163,7 +163,16 @@ class MenuTesSoalBody extends StatelessWidget {
     final kTesSusunanSatu = context.select<KontrolTes, List<String>>(
       (k) => kTes.susunanJawabanListString
     );
-
+    final kTesSusunanDua = context.select<KontrolTes, List<List<String>>>(
+      (k) => kTes.susunanJawabanListListString
+    );
+    final kTesSusunanAtas = context.select<KontrolTes, List<dynamic>>(
+      (k) => kTes.susunanJawabanListDynamic
+    );
+    final kTesSusunanRangkaian = context.select<KontrolTes, List<dynamic>>(
+      (k) => kTes.susunanJawabanListDynamic
+    );
+    
     final soal = kTes.ambilSoalTes(kTes.modul, kTesSoal);
 
     final body = switch (soal.mode.index) {
@@ -172,7 +181,7 @@ class MenuTesSoalBody extends StatelessWidget {
           gambarSoal: soal.gambar,
           gambarOpsi: soal.opsi,
           padaSusun: (susunan) {
-            kTes.aturSusunanJawabanListString(susunan);
+            kTes.aturSusunanJawabanListString(List.from(susunan));
             return;
           },
           susunan: kTesSusunanSatu,
@@ -189,16 +198,28 @@ class MenuTesSoalBody extends StatelessWidget {
         ),
       2 => SoalModel3(
           penjelas: soal.pertanyaan,
-          gambarSoal: soal.gambar,
-          gambarOpsi: soal.opsi,
-          tes: true,
+          susunanSemua: kTesSusunanDua,
+          padaSusun: (susunan) {
+            kTes.aturSusunanJawabanListListString(susunan);
+            return;
+          },
         ),
-      3 => SizedBox.shrink(),
+      3 => SoalModel4(
+        penjelas: soal.pertanyaan, 
+        susunanAwal: soal.gambar, 
+        susunanAtas: kTesSusunanAtas, 
+        opsi: soal.opsi,
+        padaSelesaiSusun: (susunan) {
+          kTes.aturSusunanJawabanListDynamic(susunan[0]);
+        },
+      ),
       4 => SoalModel5(
-          penjelas: soal.pertanyaan,
-          gambarSoal: soal.gambar,
-          jumlahOpsi: soal.jawaban[0].toString().length,
-        ),
+        penjelas: soal.pertanyaan,
+        gambarSoal: soal.gambar, 
+        panjangRangkaian: soal.jawaban.length, 
+        rangkaian: kTesSusunanRangkaian.map((isi) => isi?.toString()).toList(),
+        padaRangkai: (susunan) => kTes.aturSusunanJawabanListDynamic(susunan),
+      ),
       _ => SizedBox.shrink(),
     };
 
