@@ -4,6 +4,7 @@ import 'package:belajar_isyarat/entitas/profil/e_profil.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_belajar.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_database.dart'; // jangan masukkan notifyListener. progress hanya dihandle oleh kontrol lain
 import 'package:belajar_isyarat/kontrol/kontrol_kuis.dart';
+import 'package:belajar_isyarat/kontrol/kontrol_log.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_tes.dart';
 
 class KontrolProgress {
@@ -75,8 +76,6 @@ class KontrolProgress {
   int ambilSatuNilaiTes(int modul) => _eProfil.bahasaInggris ? _eProfil.nilaiTesInggris[modul - 1] : _eProfil.nilaiTesIndo[modul - 1];
 
   List<bool> ambilStatusBelajar(int modul) {
-    if (!_eProgressBelajar.modul.containsKey(indeksModul(modul))) return []; // contain anti error. bisa dihilangkan sebelum todo nanti1 (agar kesalahan json diketahui)
-
     return _eProgressBelajar.modul[indeksModul(modul)]!.status.values.toList(); // ! artinya sudah pasti ada nilai, jika tidak maka error
   }
 
@@ -194,7 +193,50 @@ class KontrolProgress {
     return true;
   }
 
-  //resetProgress...
+  //resetProgress
+  void resetBelajar() {
+    _eProgressBelajar.modul.forEach((_, materiBelajar) {
+      materiBelajar.status.updateAll((k, v) => false);
+    });
+
+    if (_eProfil.bahasaInggris) {
+      _eProfil.progressBelajarInggris = List.filled(_eProfil.progressBelajarInggris.length, 0);
+    } else {
+      _eProfil.progressBelajarIndo = List.filled(_eProfil.progressBelajarIndo.length, 0);
+    }
+  }
+
+
+  void resetKuis() {
+    _eProgressKuis.status.updateAll((k, v) => false);
+
+    if (_eProfil.bahasaInggris) {
+      _eProfil.progressKuisInggris = 0;
+    } else {
+      _eProfil.progressKuisIndo = 0;
+    }
+  }
+
+
+  void resetTes() {
+    if (_eProfil.bahasaInggris) {
+      _eProfil.nilaiTesInggris = List.filled(_eProfil.nilaiTesInggris.length, 0);
+    } else {
+      _eProfil.nilaiTesIndo = List.filled(_eProfil.nilaiTesIndo.length, 0);
+    }
+  }
+
+
+  void resetSemuaProgress(KontrolDatabase db, KontrolLog kLog) {
+    resetBelajar();
+    resetKuis();
+    resetTes();
+    kLog.resetLog();
+
+    // === SAVE HANYA SEKALI ===
+    simpanPerubahan(db);
+  }
+
 
   // tutup APK
   void simpanPerubahan(KontrolDatabase kontrolDatabase) {

@@ -58,7 +58,7 @@ class _MenuProgressBodyState extends State<MenuProgressBody> {
       (k) => k.semuaNilaiTes(kProgress)
     );
     final totalSkor = context.select<KontrolKuis, int>(
-      (k) => k.skorKuis
+      (k) => k.skorKuis(kProgress)
     );
 
     int totalTesSelesai = 0;
@@ -283,7 +283,28 @@ class _MenuProgressBodyState extends State<MenuProgressBody> {
 
     final data = _hitungSkorHarian(logs);
 
-    if (data.isEmpty) return _chartEmpty(alat.teksProgresBelumKuis(kProgress));
+    if (data.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+              child:Text(
+              "Statistik Nilai Tes",
+              style: TextStyle(
+                fontSize: 27,
+                fontWeight: FontWeight.bold,
+                fontFamily: alat.judul,
+                color: alat.teksHitam,
+              ),
+            ), 
+          ),
+          
+          const SizedBox(height: 8),
+          _chartEmpty(alat.teksProgresBelumKuis(kProgress))
+        ]
+      );
+    }
+
 
     final spots = List.generate(
       data.length,

@@ -253,14 +253,14 @@ class _FooterModel1State extends State<FooterModel1>
 
   @override
   Widget build(BuildContext context) {
-    final kKuisSkorKuis = context.select<KontrolKuis, int>(
-      (k) => k.skorKuis
-    );
     final kLog = context.read<KontrolLog>();
     final kKuis = context.read<KontrolKuis>();
     final kProgress = context.read<KontrolProgress>();
     final alat = context.read<AlatApp>();
     final kDatabase = context.read<KontrolDatabase>();
+    final kKuisSkorKuis = context.select<KontrolKuis, int>(
+      (k) => k.skorKuis(kProgress)
+    );
 
     padaJawab = () {
       if (kKuis.cekSatuKuisSelesai()) {

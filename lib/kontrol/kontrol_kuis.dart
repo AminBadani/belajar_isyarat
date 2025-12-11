@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 
 class KontrolKuis extends ChangeNotifier {
   final Random _acak = Random();
-  int _skorKuis = 0;
   List<int> _antrianKuis = []; // [0, 0, 0]. maks 3
 
   bool? _jawabanBenar;
@@ -27,7 +26,6 @@ class KontrolKuis extends ChangeNotifier {
     _eKuis = EKuis.fromJson(dataSoal);
 
     inisSoalKuis(kontrolProgress);
-    _skorKuis = kontrolProgress.progressKuis;
 
     notifyListeners();
     return true;
@@ -44,7 +42,6 @@ class KontrolKuis extends ChangeNotifier {
     notifyListeners();
   }
   void bukaMenuKuis(KontrolProgress kontrolProgress) {
-    _skorKuis = kontrolProgress.progressKuis;
     _pilihanKotak= 0;
     _susunanJawaban = [false];
     _jawabanBenar = null;
@@ -72,7 +69,7 @@ class KontrolKuis extends ChangeNotifier {
   List<int> get ambilAntrianKuis => _antrianKuis;
   int get ambilAwalAntrianKuis => _antrianKuis.first;
   bool get apaKosongQueueKuis => _antrianKuis.isEmpty;
-  int get skorKuis => _skorKuis;
+  int skorKuis(KontrolProgress kProgress) => kProgress.progressKuis;
   bool? get jawabanBenar => _jawabanBenar;
 
   int get pilihanKotak => _pilihanKotak;
@@ -316,8 +313,7 @@ class KontrolKuis extends ChangeNotifier {
     
     kontrolLog.catatLogKuis(idKuis: ambilAwalAntrianKuis, jawabanBenar: benar);
     kontrolProgress.naikkanProgressKuis(ambilAwalAntrianKuis, benar, kontrolDatabase);
-    _skorKuis = kontrolProgress.progressKuis;
-
+    
     notifyListeners();
     return cekNilaiKuis(benar);
   } // TODO: kembangkan pengecekkan soal

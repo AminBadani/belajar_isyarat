@@ -2,6 +2,7 @@ import 'package:belajar_isyarat/alat/alat_app.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_belajar.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_database.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_kuis.dart';
+import 'package:belajar_isyarat/kontrol/kontrol_log.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_progress.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_tes.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _MenuPengaturanBodyState extends State<MenuPengaturanBody> {
   late AlatApp alat;
   late KontrolProgress kProgress;
   late KontrolDatabase kDatabase;
+  late KontrolLog kLog;
 
   @override
   void initState() {
@@ -26,6 +28,7 @@ class _MenuPengaturanBodyState extends State<MenuPengaturanBody> {
     alat = context.read<AlatApp>();
     kProgress = context.read<KontrolProgress>();
     kDatabase = context.read<KontrolDatabase>();
+    kLog = context.read<KontrolLog>();
   }
 
   final TextEditingController cNama = TextEditingController();
@@ -184,7 +187,29 @@ class _MenuPengaturanBodyState extends State<MenuPengaturanBody> {
                       style: TextStyle(color: _profilValid ? alat.teksPutihSedang : alat.teksHitam)
                     ),
                 ),
-              )
+              ),
+              const SizedBox(height: 60),
+
+              // TOMBOL SIMPAN
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    kProgress.resetSemuaProgress(kDatabase, kLog);
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(kProgress.bahasaInggris ? "Data Is Deleted!" : "Data Dihapus!")));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: alat.salah,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shadowColor: alat.kotakHitam
+                  ),
+                  child: Text(
+                      alat.teksAturanReset(kProgress), 
+                      style: TextStyle(color: alat.teksPutihSedang)
+                    )
+                ),
+              ),
             ],
           ),
         ),

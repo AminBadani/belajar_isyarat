@@ -237,6 +237,7 @@ class AlatApp {
   String teksAturanSimpanAnonim(KontrolProgress kProgress) => kProgress.bahasaInggris ? "Save As Anonymous" : "Simpan Sebagai Anonim";
   String teksAturanSimpan(KontrolProgress kProgress) => kProgress.bahasaInggris ? "Save Profile" : "Simpan Profil";
   String teksAturanOpsional(KontrolProgress kProgress) => kProgress.bahasaInggris ? "Optional" : "Opsional";
+  String teksAturanReset(KontrolProgress kProgress) => kProgress.bahasaInggris ? "Delete all learn, test, quizez progress for english language" : "Hapus semua kemajuan belajar, tes, dan kuis untuk bahasa indonesia";
 
   String teksSaranBelajar(KontrolProgress kProgress) => kProgress.bahasaInggris
     ? "Your learning of the material is not yet complete. It is recommended that you complete the learning before taking the test or quiz!"

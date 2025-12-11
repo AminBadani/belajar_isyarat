@@ -1,6 +1,7 @@
 import 'package:belajar_isyarat/alat/alat_app.dart';
 import 'package:belajar_isyarat/kontrol/kontrol_database.dart';
 import 'package:belajar_isyarat/tampilan/card_statis.dart';
+import 'package:belajar_isyarat/tampilan/lingkaran.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1078,73 +1079,103 @@ class _SoalModel4State extends State<SoalModel4> with TickerProviderStateMixin {
       );
     }
 
+    Widget bangunPelapis({required Widget child}) {
+      final tanda = widget.selesai ? Lingkaran(
+        besar: 40, 
+        besarGarisLuar: 7, 
+        warnaGarisLuar: alat.kotakPutih, 
+        benarSalahNetral: widget.benar ? 1 : 2, 
+        warnaLingkaran: widget.benar ? alat.benar : alat.salah, 
+        warnaSimbolAngka: alat.teksPutihSedang,
+      ):null;
+
+      if (widget.selesai) {
+        return CardStatis(
+          tepiRadius: 30,
+          isiTengah: true,
+          gambarWidget: child,
+          bayanganKotak: alat.boxShadow,
+          bayanganJudul: alat.judulShadow,
+          tanda: tanda,
+          pemisahGarisLuarUkuran: widget.selesai ? 4 : 0,
+          pemisahGarisLuarWarna: widget.selesai ? alat.kotakPutih : null,
+          garisLuarUkuran: widget.selesai ? 5 : 0,
+          garisLuarWarna: widget.selesai ? (widget.benar ? alat.benar : alat.salah) : null,
+        );
+      }
+
+      return child;
+    }
+
     return Column(
       children: [
         /// PENJELAS
         Expanded(
           flex: 8,
-          child: Container(
-            width: double.maxFinite,
-            height: double.maxFinite,
-            decoration: BoxDecoration(
-              gradient: alat.warnaHeader,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: alat.boxShadow
-            ),
-            padding: EdgeInsets.all(10),
-            alignment: Alignment.center,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: bangunListGambar(
-                    adalahSusunanAtas: true, 
-                    indexFixed: susunanAwal,
-                    listName: "atas",
-                    onAcceptFromOther: (fromList, fromIndex, value, hereIndex) {
-                      if (fromList == "atas") {
-                        if (susunanAtas[hereIndex] == null) {
-                          susunanAtas[hereIndex] = value;
-                          susunanAtas[fromIndex] = null;
-                        } else {
-                          final temp = susunanAtas[hereIndex];
-                          susunanAtas[hereIndex] = value;
-                          susunanAtas[fromIndex] = temp;
+          child: bangunPelapis(
+            child: Container(
+              width: double.maxFinite,
+              height: double.maxFinite,
+              decoration: BoxDecoration(
+                gradient: alat.warnaHeader,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: alat.boxShadow
+              ),
+              padding: EdgeInsets.all(10),
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: bangunListGambar(
+                      adalahSusunanAtas: true, 
+                      indexFixed: susunanAwal,
+                      listName: "atas",
+                      onAcceptFromOther: (fromList, fromIndex, value, hereIndex) {
+                        if (fromList == "atas") {
+                          if (susunanAtas[hereIndex] == null) {
+                            susunanAtas[hereIndex] = value;
+                            susunanAtas[fromIndex] = null;
+                          } else {
+                            final temp = susunanAtas[hereIndex];
+                            susunanAtas[hereIndex] = value;
+                            susunanAtas[fromIndex] = temp;
+                          }
                         }
-                      }
 
-                      if (fromList == "bawah") {
-                        final realIndex = susunanBawah.indexOf(value);
-                        if (realIndex != -1) {
-                            final temp = susunanBawah.removeAt(realIndex);
-                            if (susunanAtas[hereIndex] != null) {
-                              susunanBawah.add(susunanAtas[hereIndex]!);
-                              susunanAtas[hereIndex] = temp;
-                            } else {
-                              susunanAtas[hereIndex] = temp;
-                            }
+                        if (fromList == "bawah") {
+                          final realIndex = susunanBawah.indexOf(value);
+                          if (realIndex != -1) {
+                              final temp = susunanBawah.removeAt(realIndex);
+                              if (susunanAtas[hereIndex] != null) {
+                                susunanBawah.add(susunanAtas[hereIndex]!);
+                                susunanAtas[hereIndex] = temp;
+                              } else {
+                                susunanAtas[hereIndex] = temp;
+                              }
+                          }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      widget.penjelas,
-                      style: TextStyle(
-                        color: alat.teksPutihSedang,
-                        fontFamily: alat.judul,
-                        fontSize: 27,
-                        fontWeight: FontWeight.bold,
-                        shadows: alat.judulShadow
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        widget.penjelas,
+                        style: TextStyle(
+                          color: alat.teksPutihSedang,
+                          fontFamily: alat.judul,
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                          shadows: alat.judulShadow
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              )
             )
-          )
+          ),
         ),
 
         const SizedBox(height: 10),

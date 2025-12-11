@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:path_provider/path_provider.dart';
 
 class KontrolDatabase {
   static final KontrolDatabase _instansi = KontrolDatabase._isi();
@@ -35,26 +36,25 @@ class KontrolDatabase {
     await player.play(AssetSource('lib/database/suara/$namaFile.wap'));
   }
 
-  /// Membaca file JSON dari folder database/data/
   Future<dynamic> ambilJson(String namaFile) async {
     try {
-      final raw = await rootBundle.loadString('lib/database/data/$namaFile.json');
-      final decoded = json.decode(raw);
+      final file = File("lib/database/data/$namaFile.json");
 
-      if (decoded is Map<String, dynamic>) {
+      // 1️⃣ Jika file user ada → baca file user
+      if (await file.exists()) {
+        final raw = await file.readAsString();
+        final decoded = json.decode(raw);
         return decoded;
-      } else if (decoded is List) {
-        return decoded;
-      } else {
-        throw FlutterError(
-          "File JSON '$namaFile' harus Map<String,dynamic> atau List, "
-          "tapi ditemukan ${decoded.runtimeType}. "
-          "Periksa apakah JSON berupa LIST []."
-        );
       }
+
+      // 2️⃣ Jika tidak ada → baca file asset bawaan aplikasi
+      final rawAsset = await rootBundle.loadString('lib/database/data/$namaFile.json');
+      final decodedAsset = json.decode(rawAsset);
+      return decodedAsset;
+
     } catch (e) {
       debugPrint("Gagal membaca JSON $namaFile: $e");
-      return <String, dynamic>{}; // return Map kosong: aman & tidak crash
+      return <String, dynamic>{};
     }
   }
 
@@ -80,6 +80,7 @@ class KontrolDatabase {
 
       await targetFile.writeAsString(
         pretty,
+        mode: FileMode.write,
         flush: true,
       );
 

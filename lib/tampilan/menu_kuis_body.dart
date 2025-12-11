@@ -12,13 +12,13 @@ class MenuKuisMenuBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final kKuisProgressKuis = context.select<KontrolKuis, int> (
-      (k) => k.skorKuis
-    );
     final kProgress = context.read<KontrolProgress>();
     final kMenu = context.read<KontrolMenu>();
     final kKuis = context.read<KontrolKuis>();
     final alat = context.read<AlatApp>();
+    final kKuisProgressKuis = context.select<KontrolKuis, int> (
+      (k) => k.skorKuis(kProgress)
+    );
 
     return Container(
           decoration: BoxDecoration(

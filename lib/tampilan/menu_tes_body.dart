@@ -366,6 +366,16 @@ class MenuTesSelesaiBody extends StatelessWidget {
                     shadows: alat.teksShadow
                   ),
                 ),
+                Text(
+                  " / ${kTes.totalSoal.toString()}",
+                  style: TextStyle(
+                    fontFamily: alat.teks,
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold,
+                    color: alat.teksHitam,
+                    shadows: alat.teksShadow
+                  ),
+                ),
               ],
             ),
             
@@ -400,7 +410,7 @@ class MenuTesSelesaiBody extends StatelessWidget {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: CardStatis(
-                  lebar: 120,
+                  lebar: 300,
                   tinggi: 80,
                   padding: 10,
                   isiTengah: true,

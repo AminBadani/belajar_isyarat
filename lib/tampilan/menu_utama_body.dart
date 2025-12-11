@@ -37,7 +37,7 @@ class _MenuUtamaBodyState extends State<MenuUtamaBody> {
     final kMenu = context.read<KontrolMenu>();
     final alat = context.read<AlatApp>();
     final kKuisProgressKuis = context.select<KontrolKuis, int>(
-      (k) => k.skorKuis
+      (k) => k.skorKuis(kProgress)
     );
     final kBelajarProgressMateri = context.select<KontrolBelajar, int>(
       (k) => k.totalSemuaMateriSelesai(kProgress)

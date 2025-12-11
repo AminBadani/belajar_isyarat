@@ -142,6 +142,10 @@ class KontrolLog {
   // =====================================================
   // ===================== SETTER ========================
   // =====================================================
+  Future<void> resetLog() async {
+    _eLog.list = [];
+    await _simpanKeDisk();
+  }
 
   /// Internal function untuk menambah log
   Future<void> _tambahLog(ELogDetail data) async {
