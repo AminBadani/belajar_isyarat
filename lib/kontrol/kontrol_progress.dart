@@ -231,7 +231,7 @@ class KontrolProgress {
     resetBelajar();
     resetKuis();
     resetTes();
-    kLog.resetLog();
+    //kLog.resetLog();
 
     // === SAVE HANYA SEKALI ===
     simpanPerubahan(db);

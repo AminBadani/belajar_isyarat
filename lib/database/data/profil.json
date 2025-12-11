@@ -1,7 +1,7 @@
 {
-  "nama": "r",
-  "sekolah": "t",
-  "jabatan": "y",
+  "nama": null,
+  "sekolah": null,
+  "jabatan": null,
   "bahasa_inggris": false,
   "progress_belajar_indo": [
     0,
